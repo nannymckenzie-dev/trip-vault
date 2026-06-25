@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+/* Trip Vault — dark mode follows system preference (prefers-color-scheme). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  /* 16px base prevents iOS auto-zoom on input focus (PRD mobile UX). */
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Minimum 44x44px tap targets for interactive controls. */
+button,
+a[role='button'] {
+  touch-action: manipulation;
+}
