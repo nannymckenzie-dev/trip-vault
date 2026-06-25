@@ -1,8 +1,26 @@
 # Trip Vault — Build Progress
 
-Working handoff doc. Spec: `nanny_trip_vault_PRD.md`. Last updated: **2026-06-24 (evening)**.
+Working handoff doc. Spec: `nanny_trip_vault_PRD.md`. Last updated: **2026-06-24 (night)**.
 
-## Status: Phases 1–3 complete + deployed; Phase 4 code complete (pending external setup)
+## ⏭️ NEXT ACTION (before Phase 5)
+
+Phase 4 code is **written, committed, and deployed**, but the email-import feature is
+**inert until the external setup is done** — and Phase 5 should not start until Phase 4 is
+verified working end-to-end. Owner to-do (full steps in `docs/phase4-setup.md`):
+
+1. **Google Cloud:** project → enable Gmail API → OAuth consent screen (External, add self as
+   test user, scope `gmail.readonly`) → OAuth client (Web) with redirect
+   `https://<app>/api/gmail/callback` → copy Client ID + Secret.
+2. **Anthropic:** create an API key.
+3. **Vercel env vars** (no `VITE_` prefix): `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`,
+   `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, `OAUTH_STATE_SECRET`
+   (and confirm `VITE_APP_URL` is set). **Redeploy** — env changes only apply on a new deploy.
+4. **Gmail:** create a "Trip Vault" label, apply it to a couple of confirmation emails.
+5. Open a trip → **Import from email** → Connect Gmail → Scan → verify the review queue.
+
+Until step 3 is done, the Import page shows a "not set up yet" card (no longer a raw 500).
+
+## Status: Phases 1–3 complete + deployed; Phase 4 code complete — BLOCKED on owner setup above
 
 | Phase | Scope | Status |
 |-------|-------|--------|
@@ -51,6 +69,8 @@ aren't set in Vercel — `src/lib/supabase.js` throws at load. Fix: set the vars
 
 ## Open items
 
+- [ ] **Complete the Phase 4 external setup** (see "NEXT ACTION" at top + `docs/phase4-setup.md`)
+      and verify connect → scan → review before starting Phase 5.
 - [ ] **Revoke the `sbp_` Supabase access token** at
       https://supabase.com/dashboard/account/tokens (used to apply storage SQL; not stored in repo
       or `.env.local`).
@@ -72,8 +92,17 @@ First server-side code. Vercel serverless functions under `/api`:
 - `vercel.json` rewrite now excludes `/api/` (`/((?!api/).*)`).
 - Model chosen: **`claude-sonnet-4-6`** (per PRD). PDF-attachment import included.
 
-**To go live:** complete `docs/phase4-setup.md` (Google OAuth app, Anthropic key, Vercel
-env vars incl. new `OAUTH_STATE_SECRET`, Gmail "Trip Vault" label), then `vercel dev`
-locally or deploy. No DB migration — `gmail_connections` + `imported_emails` already exist.
+- Functions fail **legibly** when unconfigured: `getAdmin()` is lazy (no import-time crash),
+  `getUser` throws coded errors, `failAuth` maps to 503/401, and `/api/gmail/status` returns
+  `{ configured: false }` so the Import page shows a "not set up yet" card, not a 500.
 
-## Next session — Phase 5 (AeroAPI flight status)
+**Status: deployed but inert** — waiting on the owner setup in "NEXT ACTION" above. No DB
+migration (`gmail_connections` + `imported_emails` already exist). Run locally with
+`vercel dev` (plain `npm run dev` / Vite does **not** serve `/api`).
+
+## Next session — gate check, then Phase 5
+
+1. **First:** confirm Phase 4 setup is done and the connect → scan → review flow works on the
+   deployed site (or `vercel dev`). Debug any errors — they now return readable messages.
+2. **Then:** Phase 5 — AeroAPI flight status (key config, "Check Status" on flight cards,
+   15-min IndexedDB cache). See PRD §Card Types → Live flight status and §Notes on AeroAPI.
