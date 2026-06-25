@@ -24,6 +24,20 @@ export async function uploadFile(bucket, userId, tripId, file) {
   return path
 }
 
+// Upload a trip cover photo to the PUBLIC `covers` bucket and return its
+// permanent public URL (stored in trips.cover_photo_url). No trip_id is needed
+// in the path — covers can be set before a trip row exists — but the object
+// still lives under the user's uid prefix so the write policies apply.
+export async function uploadCover(userId, file) {
+  const path = `${userId}/${crypto.randomUUID()}.${extOf(file)}`
+  const { error } = await supabase.storage.from('covers').upload(path, file, {
+    contentType: file.type || undefined,
+    upsert: false,
+  })
+  if (error) throw error
+  return supabase.storage.from('covers').getPublicUrl(path).data.publicUrl
+}
+
 // Short-lived signed URL for a private object.
 export async function signedUrl(bucket, path, expiresIn = 3600) {
   const { data, error } = await supabase.storage

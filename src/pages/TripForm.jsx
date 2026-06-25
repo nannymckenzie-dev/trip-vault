@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { uploadCover } from '../lib/storage'
 import { useAuth } from '../contexts/AuthContext'
 import Spinner from '../components/Spinner'
+import FileUpload from '../components/FileUpload'
 
 const EMPTY = {
   name: '',
@@ -28,6 +30,7 @@ export default function TripForm() {
   const [form, setForm] = useState(EMPTY)
   const [loading, setLoading] = useState(isEdit)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState(null)
 
   useEffect(() => {
@@ -59,6 +62,19 @@ export default function TripForm() {
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }))
+  }
+
+  async function handleCoverUpload(file) {
+    setError(null)
+    setUploading(true)
+    try {
+      const url = await uploadCover(user.id, file)
+      update('cover_photo_url', url)
+    } catch (err) {
+      setError(err.message || 'Could not upload the cover photo.')
+    } finally {
+      setUploading(false)
+    }
   }
 
   async function handleSubmit(e) {
@@ -185,16 +201,36 @@ export default function TripForm() {
           </div>
 
           <div>
-            <label htmlFor="cover_photo_url" className={labelClass}>
-              Cover photo URL
-            </label>
+            <label className={labelClass}>Cover photo</label>
+            {form.cover_photo_url && (
+              <div className="relative mb-2 overflow-hidden rounded-lg ring-1 ring-slate-200 dark:ring-slate-700">
+                <img
+                  src={form.cover_photo_url}
+                  alt="Cover preview"
+                  className="aspect-[16/9] w-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => update('cover_photo_url', '')}
+                  className="absolute right-2 top-2 rounded-full bg-black/60 px-2.5 py-1 text-xs font-medium text-white hover:bg-black/80"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+            <FileUpload
+              onSelect={handleCoverUpload}
+              busy={uploading}
+              accept="image/*"
+              label="Upload photo"
+            />
             <input
               id="cover_photo_url"
               type="url"
               value={form.cover_photo_url}
               onChange={(e) => update('cover_photo_url', e.target.value)}
-              placeholder="https://…"
-              className={inputClass}
+              placeholder="…or paste an image URL"
+              className={`${inputClass} mt-2`}
             />
           </div>
 
@@ -220,7 +256,7 @@ export default function TripForm() {
           <div className="flex gap-3 pt-2">
             <button
               type="submit"
-              disabled={saving}
+              disabled={saving || uploading}
               className="min-h-[44px] flex-1 rounded-lg bg-sky-600 px-4 py-2.5 text-base font-semibold text-white transition hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/50 disabled:opacity-60"
             >
               {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Create trip'}
