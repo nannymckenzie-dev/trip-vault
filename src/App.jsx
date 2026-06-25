@@ -5,6 +5,8 @@ import Login from './pages/Login'
 import Trips from './pages/Trips'
 import TripForm from './pages/TripForm'
 import TripDetail from './pages/TripDetail'
+import CardForm from './pages/CardForm'
+import CardDetail from './pages/CardDetail'
 
 export default function App() {
   return (
@@ -42,6 +44,32 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <TripForm />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Card routes. `new` is static so it ranks above `:cardId`. */}
+          <Route
+            path="/trips/:id/:section/new"
+            element={
+              <ProtectedRoute>
+                <CardForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/trips/:id/:section/:cardId"
+            element={
+              <ProtectedRoute>
+                <CardDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/trips/:id/:section/:cardId/edit"
+            element={
+              <ProtectedRoute>
+                <CardForm />
               </ProtectedRoute>
             }
           />
