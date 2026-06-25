@@ -4,21 +4,32 @@ Working handoff doc. Spec: `nanny_trip_vault_PRD.md`. Last updated: **2026-06-24
 
 ## ⏭️ NEXT ACTION
 
-**Phase 4 is DONE** — Gmail import configured, deployed, and verified end-to-end (connect →
-scan → review). **Prod domain: `https://trip-vault-nanny.vercel.app`** (Vercel scope
-`m6andco`, account `nannymckenzie-dev`). The OAuth callback bug (PWA service worker
-`navigateFallback` swallowing `/api/gmail/callback`) was fixed via
-`navigateFallbackDenylist: [/^\/api\//]` in `vite.config.js`.
+**Phases 1–5 are DONE and deployed.** Phase 4 (Gmail import) and Phase 5 (AeroAPI flight
+status) both verified end-to-end against the live site. **Prod domain:
+`https://trip-vault-nanny.vercel.app`** (Vercel scope `m6andco`, account `nannymckenzie-dev`;
+all env vars set in prod + preview + `.env.local`).
 
-**Phase 5 (flight status) code is written** — needs the owner to set one env var:
-1. Get an AeroAPI key + set `AEROAPI_KEY` in Vercel (prod + preview) and `.env.local`, then
-   redeploy. Steps in `docs/phase5-setup.md` (free personal tier, 500 queries/mo, needs a card).
-2. Verify: open a flight card with a flight number → **Check Status** → confirm live times.
+**Next: Phase 6 — read-only share links.** Per PRD §Sharing / §Phase 6:
+- Share token generation + a share-settings modal (toggle which sections are exposed:
+  docs / tickets / budget).
+- Public `/share/:token` route that renders without auth (read-only).
+- Revoke share. Remember PRD principle #5: documents stay private — only expose what the
+  toggle allows, via signed URLs, never permanent public URLs.
 
 **Standing reminders:**
-- **Rotate** the Anthropic key + Google client secret (both pasted into a chat transcript).
+- **Rotate** these secrets — all pasted into a chat transcript: Anthropic key, Google client
+  secret, AeroAPI key. (Update in Vercel via `vercel env rm` + `add`, then redeploy.)
 - Minor: stored `gmail_address` is null (cosmetic; `getTokenInfo` display lookup failed
   non-fatally — scanning works off the refresh token).
+
+## Phase 5 — built & verified (2026-06-25)
+
+`api/flights/status.js` (header-authed AeroAPI v4 call, key server-side only),
+`src/lib/flightCache.js` (15-min IndexedDB cache), `src/components/FlightStatus.jsx`
+("Check Status" on flight cards). AeroAPI only covers flights within ~2 days of departure:
+far-out dates short-circuit (no query, no charge) with a friendly note; the query window is
+anchored to the flight date ±1 day with `end` kept an hour under AeroAPI's +2-day limit
+(landing exactly on it 400s). Setup in `docs/phase5-setup.md`.
 
 ## Status: Phases 1–3 complete + deployed; Phase 4 code complete — BLOCKED on owner setup above
 
@@ -28,7 +39,7 @@ scan → review). **Prod domain: `https://trip-vault-nanny.vercel.app`** (Vercel
 | 2 | 5 card types, quick tags, trip overview panels, drag-to-reorder | ✅ Done |
 | 3 | Storage buckets + RLS, document vault, ticket storage, pdf.js viewer, offline file cache | ✅ Done |
 | 4 | Gmail OAuth + Claude email import + review queue | ✅ Done — configured, deployed, connect→scan→review verified end-to-end |
-| 5 | AeroAPI flight status | 🟡 Code done — needs `AEROAPI_KEY` (`docs/phase5-setup.md`) |
+| 5 | AeroAPI flight status | ✅ Done — key set, deployed, live status verified with real flight data |
 | 6 | Read-only share links (`/share/:token`) | ⬜ |
 | 7 | Budget tracker (`/trips/:id/budget`) | ⬜ |
 | 8 | Offline audit, install prompts, mobile polish, dark mode, empty/loading states | ⬜ |
