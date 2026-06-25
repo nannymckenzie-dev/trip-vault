@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { CARD_SECTIONS, CARD_TYPES } from '../lib/cardTypes'
 import { formatDateRange, getTripStatus } from '../lib/trips'
 import SectionPanel from '../components/SectionPanel'
+import ShareModal from '../components/ShareModal'
 import Spinner from '../components/Spinner'
 
 // File sections now live on their own pages (Phase 3).
@@ -24,6 +25,7 @@ export default function TripDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [deleting, setDeleting] = useState(false)
+  const [shareOpen, setShareOpen] = useState(false)
 
   // Trip-level notes (PRD overview section 9).
   const [notes, setNotes] = useState('')
@@ -136,9 +138,8 @@ export default function TripDetail() {
             </p>
           </div>
           <button
-            disabled
-            title="Sharing arrives in a later phase"
-            className="flex min-h-[44px] cursor-not-allowed items-center rounded-lg px-3 text-sm font-medium text-slate-300 dark:text-slate-600"
+            onClick={() => setShareOpen(true)}
+            className="flex min-h-[44px] items-center rounded-lg px-3 text-sm font-medium text-sky-600 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-950/40"
           >
             Share
           </button>
@@ -232,6 +233,8 @@ export default function TripDetail() {
           {deleting ? 'Deleting…' : 'Delete trip'}
         </button>
       </main>
+
+      {shareOpen && <ShareModal tripId={id} onClose={() => setShareOpen(false)} />}
     </div>
   )
 }

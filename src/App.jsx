@@ -10,6 +10,7 @@ import CardDetail from './pages/CardDetail'
 import Documents from './pages/Documents'
 import Tickets from './pages/Tickets'
 import Import from './pages/Import'
+import Share from './pages/Share'
 
 export default function App() {
   return (
@@ -17,6 +18,9 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+
+          {/* Public read-only shared trip — no auth guard. */}
+          <Route path="/share/:token" element={<Share />} />
 
           <Route
             path="/trips"
