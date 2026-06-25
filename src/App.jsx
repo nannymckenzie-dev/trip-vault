@@ -13,6 +13,7 @@ import Import from './pages/Import'
 import Share from './pages/Share'
 import Budget from './pages/Budget'
 import Currency from './pages/Currency'
+import Settings from './pages/Settings'
 
 export default function App() {
   return (
@@ -121,6 +122,15 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <CardForm />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
               </ProtectedRoute>
             }
           />

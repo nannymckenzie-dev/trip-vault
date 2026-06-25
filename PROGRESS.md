@@ -58,7 +58,7 @@ anchored to the flight date ±1 day with `end` kept an hour under AeroAPI's +2-d
 | 5 | AeroAPI flight status | ✅ Done — key set, deployed, live status verified with real flight data |
 | 6 | Read-only share links (`/share/:token`) | 🟡 Built + deployed, API-verified — owner UI pending a browser check |
 | 7 | Budget tracker + currency calculator | 🟡 Built + deployed — pending a browser check |
-| 8 | Offline audit, install prompts, mobile polish, dark mode, empty/loading states | ⬜ |
+| 8 | Offline audit, install prompts, mobile polish, dark mode, empty/loading states | 🟡 In progress — dark mode + Settings + install + home-currency done; remaining: "last synced", empty/loading audit, offline audit |
 
 ## Live environment
 

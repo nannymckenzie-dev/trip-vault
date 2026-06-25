@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getCachedRates, refreshRates, convert, currencyList } from '../lib/currency'
+import { getHomeCurrency } from '../lib/prefs'
 import { formatMoney } from '../lib/datetime'
 
 const PAIRS_KEY = 'tripvault.currencyPairs'
-const HOME_CURRENCY = 'USD' // configurable in settings later (Phase 8)
 const STALE_MS = 6 * 60 * 60 * 1000
 
 function loadPairs() {
@@ -51,7 +51,7 @@ export default function Currency() {
   const [rates, setRates] = useState(null) // { rates, fetchedAt }
   const [amount, setAmount] = useState('1')
   const [from, setFrom] = useState('EUR')
-  const [to, setTo] = useState(HOME_CURRENCY)
+  const [to, setTo] = useState(() => getHomeCurrency())
   const [online, setOnline] = useState(typeof navigator === 'undefined' ? true : navigator.onLine)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState(null)
@@ -74,7 +74,7 @@ export default function Currency() {
       const [cached, common] = await Promise.all([getCachedRates(), tripCurrency(id)])
       if (!active) return
       if (cached) setRates(cached)
-      if (common && common !== HOME_CURRENCY) setFrom(common)
+      if (common && common !== getHomeCurrency()) setFrom(common)
       // Refresh once per visit if online and the table is missing or stale.
       if (navigator.onLine && (!cached || Date.now() - cached.fetchedAt > STALE_MS)) {
         try {
