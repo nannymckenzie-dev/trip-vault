@@ -26,7 +26,7 @@ export function oauthClient() {
 // carry the user_id (and the trip we came from) inside a tamper-proof state
 // param: base64url(payload).hmac. A short TTL doubles as CSRF protection.
 
-const STATE_TTL_MS = 10 * 60 * 1000 // 10 minutes
+const STATE_TTL_MS = 30 * 60 * 1000 // 30 minutes (first-time OAuth + account switching is slow)
 
 export function signState(payload) {
   const body = { ...payload, t: Date.now(), n: crypto.randomBytes(8).toString('hex') }

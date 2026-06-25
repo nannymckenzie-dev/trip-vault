@@ -14,7 +14,8 @@ export default async function handler(req, res) {
   let payload
   try {
     payload = verifyState(req.query.state)
-  } catch {
+  } catch (err) {
+    console.error('[gmail/callback] state verification failed:', err.message)
     res.redirect(302, `${appUrl}/trips?gmail_error=bad_state`)
     return
   }
@@ -58,6 +59,7 @@ export default async function handler(req, res) {
 
     backToApp(payload.trip, 'connected=1')
   } catch (err) {
+    console.error('[gmail/callback] token exchange / store failed:', err.message)
     backToApp(payload.trip, `gmail_error=${encodeURIComponent(err.message || 'exchange_failed')}`)
   }
 }

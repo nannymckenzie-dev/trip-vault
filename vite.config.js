@@ -34,6 +34,10 @@ export default defineConfig({
         // App shell: precache all build assets.
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
         navigateFallback: '/index.html',
+        // Never serve the SPA shell for /api/* — those are serverless functions.
+        // Without this, the OAuth return (a full-page navigation to
+        // /api/gmail/callback) is intercepted by the SW and the callback never runs.
+        navigateFallbackDenylist: [/^\/api\//],
         // Network-first for Supabase API data, with cache fallback when offline.
         runtimeCaching: [
           {

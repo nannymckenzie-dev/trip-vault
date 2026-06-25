@@ -4,21 +4,27 @@ Working handoff doc. Spec: `nanny_trip_vault_PRD.md`. Last updated: **2026-06-24
 
 ## ⏭️ NEXT ACTION (before Phase 5)
 
-Phase 4 code is **written, committed, and deployed**, but the email-import feature is
-**inert until the external setup is done** — and Phase 5 should not start until Phase 4 is
-verified working end-to-end. Owner to-do (full steps in `docs/phase4-setup.md`):
+Phase 4 backend is **fully configured and deployed** (2026-06-25), env vars set in Vercel
+(prod + preview) and `.env.local`, Google OAuth client created, Gmail **connected end-to-end**
+(verified `gmail_connections` row with refresh token). **Prod domain:
+`https://trip-vault-nanny.vercel.app`** (Vercel scope `m6andco`, account `nannymckenzie-dev`).
 
-1. **Google Cloud:** project → enable Gmail API → OAuth consent screen (External, add self as
-   test user, scope `gmail.readonly`) → OAuth client (Web) with redirect
-   `https://<app>/api/gmail/callback` → copy Client ID + Secret.
-2. **Anthropic:** create an API key.
-3. **Vercel env vars** (no `VITE_` prefix): `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`,
-   `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, `OAUTH_STATE_SECRET`
-   (and confirm `VITE_APP_URL` is set). **Redeploy** — env changes only apply on a new deploy.
-4. **Gmail:** create a "Trip Vault" label, apply it to a couple of confirmation emails.
-5. Open a trip → **Import from email** → Connect Gmail → Scan → verify the review queue.
+**Bug fixed during setup:** the PWA service worker's `navigateFallback` was intercepting the
+full-page OAuth return to `/api/gmail/callback` and serving the SPA shell, so the callback
+function never ran (browser bounced to a bare `/trips`, no connection stored). Fix:
+`navigateFallbackDenylist: [/^\/api\//]` in `vite.config.js`. Also bumped the OAuth `state`
+TTL 10→30 min. (`fetch`-based `/api` calls were unaffected — only full-page navigations.)
 
-Until step 3 is done, the Import page shows a "not set up yet" card (no longer a raw 500).
+**Remaining before Phase 5:**
+1. Verify **Scan**: open a trip → Import from email → **Scan Gmail** → confirm Claude returns
+   review candidates → edit/confirm one → check it saves (card + `imported_emails` row).
+2. ⚠️ **Commit the working tree** — prod is currently running code deployed via `vercel --prod
+   --force` from an UNCOMMITTED working tree (sw-denylist fix, state-TTL, env-fail handling).
+   `git` is behind prod until this is committed + pushed.
+3. **Rotate** the Anthropic key + Google client secret (both pasted into a chat transcript).
+
+Minor: stored `gmail_address` is null (the `getTokenInfo` display lookup failed non-fatally;
+cosmetic only — scanning works off the refresh token).
 
 ## Status: Phases 1–3 complete + deployed; Phase 4 code complete — BLOCKED on owner setup above
 
@@ -27,7 +33,7 @@ Until step 3 is done, the Import page shows a "not set up yet" card (no longer a
 | 1 | Vite + React + Tailwind + PWA, Supabase auth, `/trips` grid, trip CRUD | ✅ Done |
 | 2 | 5 card types, quick tags, trip overview panels, drag-to-reorder | ✅ Done |
 | 3 | Storage buckets + RLS, document vault, ticket storage, pdf.js viewer, offline file cache | ✅ Done |
-| 4 | Gmail OAuth + Claude email import + review queue | 🟡 Code done — needs Google/Anthropic/Vercel setup (`docs/phase4-setup.md`) |
+| 4 | Gmail OAuth + Claude email import + review queue | 🟡 Code + env configured & deployed — needs Google redirect-URI fix + Gmail label + verify (see NEXT ACTION) |
 | 5 | AeroAPI flight status | ⬜ Next |
 | 6 | Read-only share links (`/share/:token`) | ⬜ |
 | 7 | Budget tracker (`/trips/:id/budget`) | ⬜ |
