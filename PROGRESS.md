@@ -2,29 +2,23 @@
 
 Working handoff doc. Spec: `nanny_trip_vault_PRD.md`. Last updated: **2026-06-24 (night)**.
 
-## ⏭️ NEXT ACTION (before Phase 5)
+## ⏭️ NEXT ACTION
 
-Phase 4 backend is **fully configured and deployed** (2026-06-25), env vars set in Vercel
-(prod + preview) and `.env.local`, Google OAuth client created, Gmail **connected end-to-end**
-(verified `gmail_connections` row with refresh token). **Prod domain:
-`https://trip-vault-nanny.vercel.app`** (Vercel scope `m6andco`, account `nannymckenzie-dev`).
+**Phase 4 is DONE** — Gmail import configured, deployed, and verified end-to-end (connect →
+scan → review). **Prod domain: `https://trip-vault-nanny.vercel.app`** (Vercel scope
+`m6andco`, account `nannymckenzie-dev`). The OAuth callback bug (PWA service worker
+`navigateFallback` swallowing `/api/gmail/callback`) was fixed via
+`navigateFallbackDenylist: [/^\/api\//]` in `vite.config.js`.
 
-**Bug fixed during setup:** the PWA service worker's `navigateFallback` was intercepting the
-full-page OAuth return to `/api/gmail/callback` and serving the SPA shell, so the callback
-function never ran (browser bounced to a bare `/trips`, no connection stored). Fix:
-`navigateFallbackDenylist: [/^\/api\//]` in `vite.config.js`. Also bumped the OAuth `state`
-TTL 10→30 min. (`fetch`-based `/api` calls were unaffected — only full-page navigations.)
+**Phase 5 (flight status) code is written** — needs the owner to set one env var:
+1. Get an AeroAPI key + set `AEROAPI_KEY` in Vercel (prod + preview) and `.env.local`, then
+   redeploy. Steps in `docs/phase5-setup.md` (free personal tier, 500 queries/mo, needs a card).
+2. Verify: open a flight card with a flight number → **Check Status** → confirm live times.
 
-**Remaining before Phase 5:**
-1. Verify **Scan**: open a trip → Import from email → **Scan Gmail** → confirm Claude returns
-   review candidates → edit/confirm one → check it saves (card + `imported_emails` row).
-2. ⚠️ **Commit the working tree** — prod is currently running code deployed via `vercel --prod
-   --force` from an UNCOMMITTED working tree (sw-denylist fix, state-TTL, env-fail handling).
-   `git` is behind prod until this is committed + pushed.
-3. **Rotate** the Anthropic key + Google client secret (both pasted into a chat transcript).
-
-Minor: stored `gmail_address` is null (the `getTokenInfo` display lookup failed non-fatally;
-cosmetic only — scanning works off the refresh token).
+**Standing reminders:**
+- **Rotate** the Anthropic key + Google client secret (both pasted into a chat transcript).
+- Minor: stored `gmail_address` is null (cosmetic; `getTokenInfo` display lookup failed
+  non-fatally — scanning works off the refresh token).
 
 ## Status: Phases 1–3 complete + deployed; Phase 4 code complete — BLOCKED on owner setup above
 
@@ -33,8 +27,8 @@ cosmetic only — scanning works off the refresh token).
 | 1 | Vite + React + Tailwind + PWA, Supabase auth, `/trips` grid, trip CRUD | ✅ Done |
 | 2 | 5 card types, quick tags, trip overview panels, drag-to-reorder | ✅ Done |
 | 3 | Storage buckets + RLS, document vault, ticket storage, pdf.js viewer, offline file cache | ✅ Done |
-| 4 | Gmail OAuth + Claude email import + review queue | 🟡 Code + env configured & deployed — needs Google redirect-URI fix + Gmail label + verify (see NEXT ACTION) |
-| 5 | AeroAPI flight status | ⬜ Next |
+| 4 | Gmail OAuth + Claude email import + review queue | ✅ Done — configured, deployed, connect→scan→review verified end-to-end |
+| 5 | AeroAPI flight status | 🟡 Code done — needs `AEROAPI_KEY` (`docs/phase5-setup.md`) |
 | 6 | Read-only share links (`/share/:token`) | ⬜ |
 | 7 | Budget tracker (`/trips/:id/budget`) | ⬜ |
 | 8 | Offline audit, install prompts, mobile polish, dark mode, empty/loading states | ⬜ |

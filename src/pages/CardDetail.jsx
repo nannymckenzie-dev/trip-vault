@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { getCardType, formatMoneyField } from '../lib/cardTypes'
 import { formatDate, formatTime, formatDateTime } from '../lib/datetime'
 import { QuickTagPicker } from '../components/QuickTags'
+import FlightStatus from '../components/FlightStatus'
 import Spinner from '../components/Spinner'
 
 function displayValue(field, row) {
@@ -172,6 +173,10 @@ export default function CardDetail() {
             )
           })}
         </dl>
+
+        {section === 'flights' && row.flight_number && (
+          <FlightStatus flightNumber={row.flight_number} date={row.depart_datetime} />
+        )}
 
         {notesField && row[notesField.name] && (
           <div className="mt-4 rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">

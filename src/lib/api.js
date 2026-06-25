@@ -36,3 +36,12 @@ export async function startGmailConnect(tripId) {
   })
   window.location.href = url
 }
+
+// Live flight status (AeroAPI, server-side). Caching is the caller's job
+// (src/lib/flightCache.js) so this stays a thin pass-through.
+export async function fetchFlightStatus(flightNumber, date) {
+  return authedFetch('/api/flights/status', {
+    method: 'POST',
+    body: { flight_number: flightNumber, date },
+  })
+}
