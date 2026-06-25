@@ -1,4 +1,4 @@
-import { getUser } from '../_lib/supabaseAdmin.js'
+import { getUser, failAuth } from '../_lib/supabaseAdmin.js'
 import { gmailForUser } from '../_lib/google.js'
 
 // Fetches one PDF attachment's bytes (base64) so the confirm step can upload it
@@ -12,8 +12,8 @@ export default async function handler(req, res) {
   let user
   try {
     user = await getUser(req)
-  } catch {
-    res.status(401).json({ error: 'Not authenticated' })
+  } catch (err) {
+    failAuth(res, err)
     return
   }
 

@@ -1,4 +1,4 @@
-import { admin } from '../_lib/supabaseAdmin.js'
+import { getAdmin } from '../_lib/supabaseAdmin.js'
 import { oauthClient, verifyState } from '../_lib/google.js'
 
 // Google redirects here after consent. We verify the signed state, exchange the
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
       /* non-fatal */
     }
 
-    const { error } = await admin.from('gmail_connections').upsert(
+    const { error } = await getAdmin().from('gmail_connections').upsert(
       {
         user_id: payload.uid,
         gmail_address: gmailAddress,

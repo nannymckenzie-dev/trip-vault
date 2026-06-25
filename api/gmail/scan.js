@@ -1,4 +1,4 @@
-import { getUser, admin } from '../_lib/supabaseAdmin.js'
+import { getUser, getAdmin, failAuth } from '../_lib/supabaseAdmin.js'
 import { gmailForUser } from '../_lib/google.js'
 import { parseEmail } from '../_lib/claudeParse.js'
 
@@ -62,8 +62,8 @@ export default async function handler(req, res) {
   let user
   try {
     user = await getUser(req)
-  } catch {
-    res.status(401).json({ error: 'Not authenticated' })
+  } catch (err) {
+    failAuth(res, err)
     return
   }
 
@@ -95,7 +95,7 @@ export default async function handler(req, res) {
     const ids = (list.data.messages || []).map((m) => m.id)
 
     // 2. Drop ones already resolved (imported or dismissed).
-    const { data: done } = await admin
+    const { data: done } = await getAdmin()
       .from('imported_emails')
       .select('gmail_message_id')
       .eq('user_id', user.id)

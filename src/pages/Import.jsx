@@ -259,7 +259,16 @@ export default function Import() {
           </p>
         )}
 
-        {!status?.connected ? (
+        {status && status.configured === false ? (
+          <section className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+            <h2 className="font-semibold text-slate-900 dark:text-slate-50">Email import isn’t set up yet</h2>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+              The server environment variables for Gmail import haven’t been configured. Add them
+              in Vercel (and redeploy), then reload this page. See{' '}
+              <span className="font-mono">docs/phase4-setup.md</span> for the full list.
+            </p>
+          </section>
+        ) : !status?.connected ? (
           <section className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
             <h2 className="font-semibold text-slate-900 dark:text-slate-50">Connect Gmail</h2>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">

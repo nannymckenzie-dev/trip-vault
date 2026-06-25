@@ -1,6 +1,6 @@
 import crypto from 'node:crypto'
 import { google } from 'googleapis'
-import { admin } from './supabaseAdmin.js'
+import { getAdmin } from './supabaseAdmin.js'
 
 // Gmail is accessed read-only — the app can never send, delete, or modify mail.
 export const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.readonly'
@@ -60,7 +60,7 @@ export function verifyState(state) {
 // Loads the stored refresh token and returns an authenticated gmail client.
 // googleapis transparently uses the refresh token to mint access tokens.
 export async function gmailForUser(userId) {
-  const { data, error } = await admin
+  const { data, error } = await getAdmin()
     .from('gmail_connections')
     .select('refresh_token, import_label')
     .eq('user_id', userId)

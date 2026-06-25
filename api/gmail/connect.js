@@ -1,4 +1,4 @@
-import { getUser } from '../_lib/supabaseAdmin.js'
+import { getUser, failAuth } from '../_lib/supabaseAdmin.js'
 import { oauthClient, signState, GMAIL_SCOPE } from '../_lib/google.js'
 
 // Builds the Gmail OAuth consent URL. Called via POST with the user's Supabase
@@ -13,21 +13,26 @@ export default async function handler(req, res) {
   let user
   try {
     user = await getUser(req)
-  } catch {
-    res.status(401).json({ error: 'Not authenticated' })
+  } catch (err) {
+    failAuth(res, err)
     return
   }
 
-  const tripId = typeof req.body?.trip_id === 'string' ? req.body.trip_id : null
-  const state = signState({ uid: user.id, trip: tripId })
+  try {
+    const tripId = typeof req.body?.trip_id === 'string' ? req.body.trip_id : null
+    const state = signState({ uid: user.id, trip: tripId })
 
-  const url = oauthClient().generateAuthUrl({
-    access_type: 'offline', // request a refresh token
-    prompt: 'consent', // force refresh-token issuance on re-consent
-    scope: [GMAIL_SCOPE],
-    state,
-    include_granted_scopes: true,
-  })
+    const url = oauthClient().generateAuthUrl({
+      access_type: 'offline', // request a refresh token
+      prompt: 'consent', // force refresh-token issuance on re-consent
+      scope: [GMAIL_SCOPE],
+      state,
+      include_granted_scopes: true,
+    })
 
-  res.status(200).json({ url })
+    res.status(200).json({ url })
+  } catch (err) {
+    // Missing GOOGLE_* / OAUTH_STATE_SECRET env shows up here as a clear message.
+    res.status(503).json({ error: `Gmail import isn't configured: ${err.message}` })
+  }
 }
