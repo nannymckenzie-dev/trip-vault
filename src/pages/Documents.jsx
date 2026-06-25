@@ -12,7 +12,7 @@ import Spinner from '../components/Spinner'
 
 const BUCKET = 'documents'
 const inputClass =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-50'
+  'w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-base text-text outline-none focus:border-accent focus:ring-2 focus:ring-accent/30'
 
 const DOC_SECTIONS = [
   { type: 'passport', title: 'Passports', hint: 'Photo/scan per traveler' },
@@ -60,13 +60,13 @@ export default function Documents() {
   const byType = (type) => docs.filter((d) => d.doc_type === type)
 
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-slate-950">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
+    <div className="min-h-full bg-bg">
+      <header className="sticky top-0 z-10 border-b border-line bg-surface/90 backdrop-blur">
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3">
-          <Link to={`/trips/${tripId}`} aria-label="Back to trip" className="-ml-2 flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
+          <Link to={`/trips/${tripId}`} aria-label="Back to trip" className="-ml-2 flex h-11 w-11 items-center justify-center rounded-lg text-text-dim hover:text-text">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5"><path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </Link>
-          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Documents</h1>
+          <h1 className="text-lg font-semibold text-text">Documents</h1>
         </div>
       </header>
 
@@ -79,15 +79,15 @@ export default function Documents() {
           DOC_SECTIONS.map((section) => {
             const items = byType(section.type)
             return (
-              <section key={section.type} className="rounded-2xl bg-white ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+              <section key={section.type} className="rounded-2xl bg-surface ring-1 ring-line">
                 <div className="flex items-center justify-between px-4 py-3">
                   <div>
-                    <h2 className="font-semibold text-slate-900 dark:text-slate-50">{section.title}</h2>
-                    <p className="text-xs text-slate-400">{section.hint}</p>
+                    <h2 className="font-semibold text-text">{section.title}</h2>
+                    <p className="text-xs text-text-dim">{section.hint}</p>
                   </div>
                   <button
                     onClick={() => setEditing(blankDoc(section.type))}
-                    className="flex min-h-[40px] items-center gap-1 rounded-lg px-2 text-sm font-medium text-sky-600 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-950/30"
+                    className="flex min-h-[40px] items-center gap-1 rounded-lg px-2 text-sm font-medium text-accent-strong hover:bg-surface-2"
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4"><path d="M12 5v14M5 12h14" strokeLinecap="round" /></svg>
                     Add
@@ -95,21 +95,21 @@ export default function Documents() {
                 </div>
 
                 {items.length > 0 && (
-                  <ul className="divide-y divide-slate-100 border-t border-slate-100 dark:divide-slate-800 dark:border-slate-800">
+                  <ul className="divide-y divide-line border-t border-line">
                     {items.map((doc) => (
                       <li key={doc.id} className="px-4 py-3">
                         <div className="flex items-start justify-between gap-3">
                           <button onClick={() => doc.file_url && setViewing(doc)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
                             <span className="text-2xl">{fileIcon(doc.file_type)}</span>
                             <div className="min-w-0">
-                              <p className="truncate font-medium text-slate-900 dark:text-slate-50">{doc.label || section.title}</p>
+                              <p className="truncate font-medium text-text">{doc.label || section.title}</p>
                               {doc.doc_type === 'insurance' && doc.emergency_contact && (
                                 <p className="text-sm font-semibold text-rose-600 dark:text-rose-400">
                                   Emergency: {doc.emergency_contact}
                                 </p>
                               )}
                               {doc.doc_type === 'insurance' && doc.provider && (
-                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                <p className="text-xs text-text-dim">
                                   {doc.provider}
                                   {doc.policy_number ? ` · #${doc.policy_number}` : ''}
                                 </p>
@@ -117,10 +117,10 @@ export default function Documents() {
                             </div>
                           </button>
                         </div>
-                        {doc.notes && <p className="mt-1 whitespace-pre-wrap text-sm text-slate-600 dark:text-slate-300">{doc.notes}</p>}
+                        {doc.notes && <p className="mt-1 whitespace-pre-wrap text-sm text-text-soft">{doc.notes}</p>}
                         <div className="mt-2 flex items-center gap-4">
                           {doc.file_url && <OfflineToggle bucket={BUCKET} path={doc.file_url} />}
-                          <button onClick={() => setEditing({ ...doc, file: null })} className="text-xs font-medium text-sky-600 dark:text-sky-400">Edit</button>
+                          <button onClick={() => setEditing({ ...doc, file: null })} className="text-xs font-medium text-accent-strong">Edit</button>
                           <button onClick={() => handleDelete(doc)} className="text-xs font-medium text-red-600 dark:text-red-400">Delete</button>
                         </div>
                       </li>
@@ -211,7 +211,7 @@ function DocumentEditor({ tripId, userId, initial, onClose, onSaved }) {
 
   const field = (label, key, type = 'text', props = {}) => (
     <div>
-      <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>
+      <label className="mb-1 block text-sm font-medium text-text-soft">{label}</label>
       <input
         type={type}
         value={type === 'date' ? toDateInput(form[key]) : form[key] ?? ''}
@@ -223,10 +223,10 @@ function DocumentEditor({ tripId, userId, initial, onClose, onSaved }) {
   )
 
   return (
-    <div className="fixed inset-0 z-40 flex flex-col bg-slate-50 dark:bg-slate-950">
-      <header className="flex items-center gap-3 border-b border-slate-200 px-4 py-3 dark:border-slate-800">
-        <button onClick={onClose} aria-label="Cancel" className="-ml-2 flex h-11 w-11 items-center justify-center rounded-lg text-slate-500">✕</button>
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
+    <div className="fixed inset-0 z-40 flex flex-col bg-bg">
+      <header className="flex items-center gap-3 border-b border-line px-4 py-3">
+        <button onClick={onClose} aria-label="Cancel" className="-ml-2 flex h-11 w-11 items-center justify-center rounded-lg text-text-dim">✕</button>
+        <h2 className="text-lg font-semibold text-text">
           {isEdit ? 'Edit document' : 'Add document'}
         </h2>
       </header>
@@ -234,9 +234,9 @@ function DocumentEditor({ tripId, userId, initial, onClose, onSaved }) {
         {field('Label / traveler name', 'label')}
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">File (photo or PDF)</label>
+          <label className="mb-1 block text-sm font-medium text-text-soft">File (photo or PDF)</label>
           <FileUpload accept="image/*,application/pdf" onSelect={(file) => set('file', file)} label={form.file ? form.file.name : 'Choose file'} />
-          {(form.file || initial.file_url) && <p className="mt-1 text-xs text-slate-500">{form.file ? form.file.name : 'Current file kept unless replaced'}</p>}
+          {(form.file || initial.file_url) && <p className="mt-1 text-xs text-text-dim">{form.file ? form.file.name : 'Current file kept unless replaced'}</p>}
         </div>
 
         {isInsurance && (
@@ -252,12 +252,12 @@ function DocumentEditor({ tripId, userId, initial, onClose, onSaved }) {
         )}
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Notes</label>
+          <label className="mb-1 block text-sm font-medium text-text-soft">Notes</label>
           <textarea rows={3} value={form.notes} onChange={(e) => set('notes', e.target.value)} className={inputClass} />
         </div>
 
         {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">{error}</p>}
-        <button onClick={save} disabled={saving} className="min-h-[44px] w-full rounded-lg bg-sky-600 px-4 text-base font-semibold text-white hover:bg-sky-500 disabled:opacity-60">
+        <button onClick={save} disabled={saving} className="min-h-[44px] w-full rounded-lg bg-accent px-4 text-base font-semibold text-on-accent hover:brightness-95 disabled:opacity-60">
           {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Add document'}
         </button>
       </div>

@@ -11,8 +11,8 @@ function Toggle({ checked, onChange, label, hint }) {
   return (
     <label className="flex cursor-pointer items-center justify-between gap-4 py-2">
       <span>
-        <span className="block text-sm font-medium text-slate-900 dark:text-slate-100">{label}</span>
-        <span className="block text-xs text-slate-500 dark:text-slate-400">{hint}</span>
+        <span className="block text-sm font-medium text-text">{label}</span>
+        <span className="block text-xs text-text-dim">{hint}</span>
       </span>
       <span className="relative inline-flex h-6 w-11 shrink-0 items-center">
         <input
@@ -21,8 +21,8 @@ function Toggle({ checked, onChange, label, hint }) {
           onChange={(e) => onChange(e.target.checked)}
           className="peer sr-only"
         />
-        <span className="h-6 w-11 rounded-full bg-slate-300 transition peer-checked:bg-sky-600 dark:bg-slate-700" />
-        <span className="absolute left-0.5 h-5 w-5 rounded-full bg-white transition peer-checked:translate-x-5" />
+        <span className="h-6 w-11 rounded-full bg-line transition peer-checked:bg-accent" />
+        <span className="absolute left-0.5 h-5 w-5 rounded-full bg-surface transition peer-checked:translate-x-5" />
       </span>
     </label>
   )
@@ -117,28 +117,28 @@ export default function ShareModal({ tripId, onClose }) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md rounded-t-2xl bg-white p-5 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800 sm:rounded-2xl"
+        className="w-full max-w-md rounded-t-2xl bg-surface p-5 ring-1 ring-line sm:rounded-2xl"
       >
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Share trip</h2>
+          <h2 className="text-lg font-semibold text-text">Share trip</h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-text-dim hover:text-text-soft"
           >
             ✕
           </button>
         </div>
 
-        <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mb-3 text-sm text-text-dim">
           Anyone with the link can view this trip — read-only, no sign-in. Choose what to include.
         </p>
 
         {loading ? (
-          <p className="py-6 text-center text-sm text-slate-400">Loading…</p>
+          <p className="py-6 text-center text-sm text-text-dim">Loading…</p>
         ) : (
           <>
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-line">
               {TOGGLES.map((t) => (
                 <Toggle
                   key={t.key}
@@ -152,16 +152,16 @@ export default function ShareModal({ tripId, onClose }) {
 
             {share ? (
               <div className="mt-4 space-y-3">
-                <div className="flex items-center gap-2 rounded-lg bg-slate-100 p-2 dark:bg-slate-800">
+                <div className="flex items-center gap-2 rounded-lg bg-surface-2 p-2">
                   <input
                     readOnly
                     value={link}
                     onFocus={(e) => e.target.select()}
-                    className="min-w-0 flex-1 bg-transparent px-1 text-sm text-slate-700 outline-none dark:text-slate-200"
+                    className="min-w-0 flex-1 bg-transparent px-1 text-sm text-text-soft outline-none"
                   />
                   <button
                     onClick={copy}
-                    className="shrink-0 rounded-md bg-sky-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-sky-700"
+                    className="shrink-0 rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-on-accent hover:brightness-95"
                   >
                     {copied ? 'Copied!' : 'Copy'}
                   </button>
@@ -178,7 +178,7 @@ export default function ShareModal({ tripId, onClose }) {
               <button
                 onClick={createLink}
                 disabled={busy}
-                className="mt-4 w-full rounded-lg bg-sky-600 py-2.5 text-sm font-medium text-white hover:bg-sky-700 disabled:opacity-60"
+                className="mt-4 w-full rounded-lg bg-accent py-2.5 text-sm font-medium text-on-accent hover:brightness-95 disabled:opacity-60"
               >
                 {busy ? 'Creating…' : 'Create share link'}
               </button>

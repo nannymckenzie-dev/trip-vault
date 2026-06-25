@@ -39,8 +39,8 @@ export default function OfflineToggle({ bucket, path }) {
       title={cached ? 'Saved offline — tap to remove' : 'Save for offline'}
       className={`inline-flex min-h-[36px] items-center gap-1 rounded-lg px-2 text-xs font-medium disabled:opacity-50 ${
         cached
-          ? 'text-emerald-600 dark:text-emerald-400'
-          : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100'
+          ? 'text-sage'
+          : 'text-text-dim hover:text-text'
       }`}
     >
       {cached ? (

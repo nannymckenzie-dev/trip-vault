@@ -113,7 +113,7 @@ export default function CardForm() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <div className="flex h-full items-center justify-center bg-bg">
         <Spinner />
       </div>
     )
@@ -124,19 +124,19 @@ export default function CardForm() {
     : `/trips/${tripId}`
 
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-slate-950">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
+    <div className="min-h-full bg-bg">
+      <header className="sticky top-0 z-10 border-b border-line bg-surface/90 backdrop-blur">
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3">
           <Link
             to={cancelTo}
             aria-label="Back"
-            className="-ml-2 flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+            className="-ml-2 flex h-11 w-11 items-center justify-center rounded-lg text-text-dim hover:text-text"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
               <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </Link>
-          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
+          <h1 className="text-lg font-semibold text-text">
             {isEdit ? `Edit ${type.singular.toLowerCase()}` : `Add ${type.singular.toLowerCase()}`}
           </h1>
         </div>
@@ -149,7 +149,7 @@ export default function CardForm() {
           ))}
 
           <div>
-            <p className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+            <p className="mb-2 block text-sm font-medium text-text-soft">
               Quick tags
             </p>
             <QuickTagPicker
@@ -168,13 +168,13 @@ export default function CardForm() {
             <button
               type="submit"
               disabled={saving}
-              className="min-h-[44px] flex-1 rounded-lg bg-sky-600 px-4 py-2.5 text-base font-semibold text-white transition hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/50 disabled:opacity-60"
+              className="min-h-[44px] flex-1 rounded-lg bg-accent px-4 py-2.5 text-base font-semibold text-on-accent transition hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-accent/40 disabled:opacity-60"
             >
               {saving ? 'Saving…' : isEdit ? 'Save changes' : `Add ${type.singular.toLowerCase()}`}
             </button>
             <Link
               to={cancelTo}
-              className="flex min-h-[44px] items-center justify-center rounded-lg px-4 text-base font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="flex min-h-[44px] items-center justify-center rounded-lg px-4 text-base font-medium text-text-soft hover:bg-surface-2"
             >
               Cancel
             </Link>

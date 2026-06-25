@@ -36,13 +36,13 @@ function ExpenseForm({ initial, currencyOptions, onSave, onCancel, saving }) {
   const [form, setForm] = useState(initial)
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }))
   const inputCls =
-    'mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base text-slate-900 outline-none focus:border-sky-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-50'
+    'mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-base text-text outline-none focus:border-accent'
 
   return (
-    <div className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+    <div className="rounded-2xl bg-surface p-4 ring-1 ring-line">
       <div className="flex gap-2">
         <label className="flex-1">
-          <span className="text-xs font-medium uppercase tracking-wide text-slate-400">Amount</span>
+          <span className="text-xs font-medium uppercase tracking-wide text-text-dim">Amount</span>
           <input
             type="number"
             inputMode="decimal"
@@ -52,7 +52,7 @@ function ExpenseForm({ initial, currencyOptions, onSave, onCancel, saving }) {
           />
         </label>
         <label className="w-28">
-          <span className="text-xs font-medium uppercase tracking-wide text-slate-400">Currency</span>
+          <span className="text-xs font-medium uppercase tracking-wide text-text-dim">Currency</span>
           <select value={form.currency} onChange={(e) => set('currency', e.target.value)} className={inputCls}>
             {currencyOptions.map((c) => (
               <option key={c} value={c}>{c}</option>
@@ -61,7 +61,7 @@ function ExpenseForm({ initial, currencyOptions, onSave, onCancel, saving }) {
         </label>
       </div>
       <label className="mt-3 block">
-        <span className="text-xs font-medium uppercase tracking-wide text-slate-400">Category</span>
+        <span className="text-xs font-medium uppercase tracking-wide text-text-dim">Category</span>
         <select value={form.category} onChange={(e) => set('category', e.target.value)} className={inputCls}>
           {BUDGET_CATEGORIES.map((c) => (
             <option key={c} value={c}>{c}</option>
@@ -69,16 +69,16 @@ function ExpenseForm({ initial, currencyOptions, onSave, onCancel, saving }) {
         </select>
       </label>
       <label className="mt-3 block">
-        <span className="text-xs font-medium uppercase tracking-wide text-slate-400">Description</span>
+        <span className="text-xs font-medium uppercase tracking-wide text-text-dim">Description</span>
         <input value={form.description} onChange={(e) => set('description', e.target.value)} className={inputCls} />
       </label>
       <div className="mt-3 flex gap-2">
         <label className="flex-1">
-          <span className="text-xs font-medium uppercase tracking-wide text-slate-400">Date</span>
+          <span className="text-xs font-medium uppercase tracking-wide text-text-dim">Date</span>
           <input type="date" value={form.entry_date || ''} onChange={(e) => set('entry_date', e.target.value)} className={inputCls} />
         </label>
         <label className="flex-1">
-          <span className="text-xs font-medium uppercase tracking-wide text-slate-400">Paid by</span>
+          <span className="text-xs font-medium uppercase tracking-wide text-text-dim">Paid by</span>
           <input value={form.paid_by} onChange={(e) => set('paid_by', e.target.value)} className={inputCls} />
         </label>
       </div>
@@ -86,11 +86,11 @@ function ExpenseForm({ initial, currencyOptions, onSave, onCancel, saving }) {
         <button
           onClick={() => onSave(form)}
           disabled={saving || !form.amount}
-          className="flex-1 rounded-lg bg-sky-600 py-2.5 text-sm font-medium text-white hover:bg-sky-700 disabled:opacity-60"
+          className="flex-1 rounded-lg bg-accent py-2.5 text-sm font-medium text-on-accent hover:brightness-95 disabled:opacity-60"
         >
           {saving ? 'Saving…' : 'Save expense'}
         </button>
-        <button onClick={onCancel} className="rounded-lg px-4 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
+        <button onClick={onCancel} className="rounded-lg px-4 py-2.5 text-sm font-medium text-text-dim hover:bg-surface-2">
           Cancel
         </button>
       </div>
@@ -146,12 +146,12 @@ export default function Budget() {
   const totalBudget = Number(budget?.total_budget) || 0
   const pct = totalBudget > 0 ? Math.min(100, (spent / totalBudget) * 100) : 0
   const barColor = !totalBudget
-    ? 'bg-slate-400'
+    ? 'bg-line'
     : spent > totalBudget
       ? 'bg-red-500'
       : pct > 80
         ? 'bg-amber-500'
-        : 'bg-emerald-500'
+        : 'bg-sage'
 
   // Per-category spent.
   const byCategory = {}
@@ -216,30 +216,30 @@ export default function Budget() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <div className="flex h-full items-center justify-center bg-bg">
         <Spinner />
       </div>
     )
   }
 
   const inputCls =
-    'mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base text-slate-900 outline-none focus:border-sky-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-50'
+    'mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-base text-text outline-none focus:border-accent'
 
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-slate-950">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
+    <div className="min-h-full bg-bg">
+      <header className="sticky top-0 z-10 border-b border-line bg-surface/90 backdrop-blur">
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3">
           <Link
             to={`/trips/${id}`}
             aria-label="Back to trip"
-            className="-ml-2 flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+            className="-ml-2 flex h-11 w-11 items-center justify-center rounded-lg text-text-dim hover:text-text"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
               <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </Link>
-          <h1 className="flex-1 text-lg font-semibold text-slate-900 dark:text-slate-50">Budget</h1>
-          <Link to={`/trips/${id}/currency`} className="text-sm font-medium text-sky-600 dark:text-sky-400">
+          <h1 className="flex-1 text-lg font-semibold text-text">Budget</h1>
+          <Link to={`/trips/${id}/currency`} className="text-sm font-medium text-accent-strong">
             Currency →
           </Link>
         </div>
@@ -248,24 +248,24 @@ export default function Budget() {
       <main className="mx-auto max-w-2xl space-y-4 px-4 py-5">
         {/* Budget summary / setup */}
         {!budget && !editingBudget ? (
-          <div className="rounded-2xl bg-white p-5 text-center ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
-            <p className="text-slate-600 dark:text-slate-300">No budget set for this trip yet.</p>
+          <div className="rounded-2xl bg-surface p-5 text-center ring-1 ring-line">
+            <p className="text-text-soft">No budget set for this trip yet.</p>
             <button
               onClick={() => setEditingBudget(true)}
-              className="mt-3 rounded-lg bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700"
+              className="mt-3 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-on-accent hover:brightness-95"
             >
               Set a budget
             </button>
           </div>
         ) : editingBudget ? (
-          <div className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+          <div className="rounded-2xl bg-surface p-4 ring-1 ring-line">
             <div className="flex gap-2">
               <label className="flex-1">
-                <span className="text-xs font-medium uppercase tracking-wide text-slate-400">Total budget</span>
+                <span className="text-xs font-medium uppercase tracking-wide text-text-dim">Total budget</span>
                 <input type="number" inputMode="decimal" value={total} onChange={(e) => setTotal(e.target.value)} className={inputCls} />
               </label>
               <label className="w-28">
-                <span className="text-xs font-medium uppercase tracking-wide text-slate-400">Currency</span>
+                <span className="text-xs font-medium uppercase tracking-wide text-text-dim">Currency</span>
                 <select value={budgetCcy} onChange={(e) => setBudgetCcy(e.target.value)} className={inputCls}>
                   {ccyOptions.map((c) => (
                     <option key={c} value={c}>{c}</option>
@@ -274,30 +274,30 @@ export default function Budget() {
               </label>
             </div>
             <div className="mt-4 flex gap-2">
-              <button onClick={saveBudget} disabled={saving} className="flex-1 rounded-lg bg-sky-600 py-2.5 text-sm font-medium text-white hover:bg-sky-700 disabled:opacity-60">
+              <button onClick={saveBudget} disabled={saving} className="flex-1 rounded-lg bg-accent py-2.5 text-sm font-medium text-on-accent hover:brightness-95 disabled:opacity-60">
                 {saving ? 'Saving…' : 'Save budget'}
               </button>
-              <button onClick={() => setEditingBudget(false)} className="rounded-lg px-4 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
+              <button onClick={() => setEditingBudget(false)} className="rounded-lg px-4 py-2.5 text-sm font-medium text-text-dim hover:bg-surface-2">
                 Cancel
               </button>
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+          <div className="rounded-2xl bg-surface p-4 ring-1 ring-line">
             <div className="flex items-baseline justify-between">
-              <span className="text-2xl font-bold text-slate-900 dark:text-slate-50">{formatMoney(spent, ccy)}</span>
-              <button onClick={() => setEditingBudget(true)} className="text-sm font-medium text-sky-600 dark:text-sky-400">
+              <span className="text-2xl font-bold text-text">{formatMoney(spent, ccy)}</span>
+              <button onClick={() => setEditingBudget(true)} className="text-sm font-medium text-accent-strong">
                 Edit
               </button>
             </div>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-text-dim">
               spent of {formatMoney(totalBudget, ccy)} budget
             </p>
-            <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+            <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-surface-2">
               <div className={`h-full ${barColor}`} style={{ width: `${pct}%` }} />
             </div>
             {totalBudget > 0 && (
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-text-dim">
                 {spent > totalBudget
                   ? `${formatMoney(spent - totalBudget, ccy)} over budget`
                   : `${formatMoney(totalBudget - spent, ccy)} remaining`}
@@ -314,17 +314,17 @@ export default function Budget() {
 
         {/* Category breakdown */}
         {Object.keys(byCategory).length > 0 && (
-          <div className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
-            <h2 className="mb-2 text-sm font-semibold text-slate-900 dark:text-slate-50">By category</h2>
+          <div className="rounded-2xl bg-surface p-4 ring-1 ring-line">
+            <h2 className="mb-2 text-sm font-semibold text-text">By category</h2>
             <div className="space-y-1.5">
               {Object.entries(byCategory).map(([cat, amt]) => {
                 const sub = budget?.category_budgets?.[cat]
                 return (
                   <div key={cat} className="flex justify-between text-sm">
-                    <span className="text-slate-600 dark:text-slate-300">{cat}</span>
-                    <span className="font-medium text-slate-900 dark:text-slate-100">
+                    <span className="text-text-soft">{cat}</span>
+                    <span className="font-medium text-text">
                       {formatMoney(amt, ccy)}
-                      {sub ? <span className="text-slate-400"> / {formatMoney(sub, ccy)}</span> : null}
+                      {sub ? <span className="text-text-dim"> / {formatMoney(sub, ccy)}</span> : null}
                     </span>
                   </div>
                 )
@@ -363,7 +363,7 @@ export default function Budget() {
         ) : (
           <button
             onClick={() => setAddOpen(true)}
-            className="w-full rounded-2xl border-2 border-dashed border-slate-300 py-3 text-sm font-medium text-slate-500 hover:border-sky-400 hover:text-sky-600 dark:border-slate-700 dark:text-slate-400"
+            className="w-full rounded-2xl border-2 border-dashed border-line py-3 text-sm font-medium text-text-dim hover:border-accent hover:text-accent-strong"
           >
             + Add expense
           </button>
@@ -373,20 +373,20 @@ export default function Budget() {
         {entries.length > 0 && (
           <div className="space-y-2">
             {entries.map((e) => (
-              <div key={e.id} className="flex items-center justify-between gap-3 rounded-2xl bg-white px-4 py-3 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+              <div key={e.id} className="flex items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-3 ring-1 ring-line">
                 <div className="min-w-0">
-                  <p className="truncate font-medium text-slate-900 dark:text-slate-50">
+                  <p className="truncate font-medium text-text">
                     {e.description || e.category}
                   </p>
-                  <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                  <p className="truncate text-xs text-text-dim">
                     {[e.category, formatDate(e.entry_date), e.paid_by && `· ${e.paid_by}`].filter(Boolean).join(' ')}
                   </p>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="font-semibold text-slate-900 dark:text-slate-100">
+                  <span className="font-semibold text-text">
                     {formatMoney(e.amount, e.currency)}
                   </span>
-                  <button onClick={() => { setEditId(e.id); setAddOpen(false) }} aria-label="Edit" className="ml-1 rounded-md px-2 py-1 text-xs text-sky-600 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-950/40">
+                  <button onClick={() => { setEditId(e.id); setAddOpen(false) }} aria-label="Edit" className="ml-1 rounded-md px-2 py-1 text-xs text-accent-strong hover:bg-surface-2">
                     Edit
                   </button>
                   <button onClick={() => deleteEntry(e.id)} aria-label="Delete" className="rounded-md px-2 py-1 text-xs text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40">

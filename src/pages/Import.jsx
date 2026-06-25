@@ -224,32 +224,32 @@ export default function Import() {
 
   if (loadingStatus) {
     return (
-      <div className="flex h-full items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <div className="flex h-full items-center justify-center bg-bg">
         <Spinner />
       </div>
     )
   }
 
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-slate-950">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
+    <div className="min-h-full bg-bg">
+      <header className="sticky top-0 z-10 border-b border-line bg-surface/90 backdrop-blur">
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3">
           <Link
             to={`/trips/${tripId}`}
             aria-label="Back"
-            className="-ml-2 flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+            className="-ml-2 flex h-11 w-11 items-center justify-center rounded-lg text-text-dim hover:text-text"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
               <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </Link>
-          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Import from email</h1>
+          <h1 className="text-lg font-semibold text-text">Import from email</h1>
         </div>
       </header>
 
       <main className="mx-auto max-w-2xl space-y-4 px-4 py-5">
         {notice && (
-          <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
+          <p className="rounded-lg bg-sage/20 px-3 py-2 text-sm text-sage">
             {notice}
           </p>
         )}
@@ -260,55 +260,55 @@ export default function Import() {
         )}
 
         {status && status.configured === false ? (
-          <section className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
-            <h2 className="font-semibold text-slate-900 dark:text-slate-50">Email import isn’t set up yet</h2>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+          <section className="rounded-2xl bg-surface p-4 ring-1 ring-line">
+            <h2 className="font-semibold text-text">Email import isn’t set up yet</h2>
+            <p className="mt-1 text-sm text-text-soft">
               The server environment variables for Gmail import haven’t been configured. Add them
               in Vercel (and redeploy), then reload this page. See{' '}
               <span className="font-mono">docs/phase4-setup.md</span> for the full list.
             </p>
           </section>
         ) : !status?.connected ? (
-          <section className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
-            <h2 className="font-semibold text-slate-900 dark:text-slate-50">Connect Gmail</h2>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+          <section className="rounded-2xl bg-surface p-4 ring-1 ring-line">
+            <h2 className="font-semibold text-text">Connect Gmail</h2>
+            <p className="mt-1 text-sm text-text-soft">
               Trip Vault scans Gmail <strong>read-only</strong> for messages you label{' '}
               <span className="font-mono">Trip Vault</span>, then lets you review what it finds
               before anything is saved.
             </p>
-            <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-slate-600 dark:text-slate-300">
+            <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-text-soft">
               <li>In Gmail, create a label named <strong>Trip Vault</strong>.</li>
               <li>Apply it to any booking confirmation email.</li>
               <li>Connect below, then tap <em>Scan Gmail</em>.</li>
             </ol>
             <button
               onClick={connect}
-              className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-sky-600 px-4 text-sm font-semibold text-white hover:bg-sky-500"
+              className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent hover:brightness-95"
             >
               Connect Gmail
             </button>
           </section>
         ) : (
-          <section className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+          <section className="rounded-2xl bg-surface p-4 ring-1 ring-line">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm text-slate-600 dark:text-slate-300">
+                <p className="text-sm text-text-soft">
                   Connected{status.gmail_address ? ` as ${status.gmail_address}` : ''}
                 </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500">
+                <p className="text-xs text-text-dim">
                   Scanning label “{status.label}”
                 </p>
               </div>
               <button
                 onClick={scan}
                 disabled={scanning}
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-sky-600 px-4 text-sm font-semibold text-white hover:bg-sky-500 disabled:opacity-60"
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent hover:brightness-95 disabled:opacity-60"
               >
                 {scanning ? 'Scanning…' : 'Scan Gmail'}
               </button>
             </div>
             {scanInfo && (
-              <p className="mt-2 text-xs text-slate-400 dark:text-slate-500">
+              <p className="mt-2 text-xs text-text-dim">
                 {scanInfo.total} labeled · parsed {scanInfo.scanned}
                 {scanInfo.remaining > 0 && ` · ${scanInfo.remaining} more — scan again to continue`}
               </p>
@@ -323,16 +323,16 @@ export default function Import() {
             return (
               <div
                 key={c.cid}
-                className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800"
+                className="flex items-center justify-between rounded-2xl bg-surface px-4 py-3 text-sm ring-1 ring-line"
               >
-                <span className="truncate text-slate-500 dark:text-slate-400">
+                <span className="truncate text-text-dim">
                   {c.gmail_subject || targetLabel(c.parsed.type)}
                 </span>
                 <span
                   className={
                     c.state === 'saved'
-                      ? 'shrink-0 font-medium text-emerald-600 dark:text-emerald-400'
-                      : 'shrink-0 text-slate-400'
+                      ? 'shrink-0 font-medium text-sage'
+                      : 'shrink-0 text-text-dim'
                   }
                 >
                   {c.state === 'saved' ? '✓ Added' : 'Dismissed'}
@@ -344,26 +344,26 @@ export default function Import() {
           return (
             <section
               key={c.cid}
-              className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800"
+              className="rounded-2xl bg-surface p-4 ring-1 ring-line"
             >
               <div className="mb-3 flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <span className="inline-block rounded-full bg-sky-100 px-2 py-0.5 text-xs font-semibold text-sky-700 dark:bg-sky-950 dark:text-sky-300">
+                  <span className="inline-block rounded-full bg-accent/20 px-2 py-0.5 text-xs font-semibold text-accent-strong">
                     {targetLabel(c.parsed.type)}
                   </span>
-                  <p className="mt-1 truncate text-xs text-slate-400 dark:text-slate-500">
+                  <p className="mt-1 truncate text-xs text-text-dim">
                     {c.gmail_subject}
                   </p>
                 </div>
                 {typeof c.parsed.confidence === 'number' && (
-                  <span className="shrink-0 text-xs text-slate-400">
+                  <span className="shrink-0 text-xs text-text-dim">
                     {Math.round(c.parsed.confidence * 100)}% sure
                   </span>
                 )}
               </div>
 
               {t.kind === 'unknown' ? (
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-sm text-text-dim">
                   Couldn’t recognize this as a booking. Dismiss it to skip.
                 </p>
               ) : (
@@ -379,7 +379,7 @@ export default function Import() {
 
                   {t.kind === 'card' && (
                     <div>
-                      <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                      <p className="mb-2 text-sm font-medium text-text-soft">
                         Quick tags
                       </p>
                       <QuickTagPicker
@@ -390,7 +390,7 @@ export default function Import() {
                   )}
 
                   {t.kind === 'card' && c.attachments.length > 0 && (
-                    <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                    <label className="flex items-center gap-2 text-sm text-text-soft">
                       <input
                         type="checkbox"
                         checked={c.attachToTickets}
@@ -401,7 +401,7 @@ export default function Import() {
                     </label>
                   )}
                   {(t.kind === 'ticket' || t.kind === 'insurance') && c.attachments.length > 0 && (
-                    <p className="text-xs text-slate-400 dark:text-slate-500">
+                    <p className="text-xs text-text-dim">
                       Attaching {c.attachments[0].filename}
                     </p>
                   )}
@@ -419,7 +419,7 @@ export default function Import() {
                   <button
                     onClick={() => addCandidate(c)}
                     disabled={c.state === 'saving'}
-                    className="min-h-[44px] flex-1 rounded-lg bg-sky-600 px-4 text-sm font-semibold text-white hover:bg-sky-500 disabled:opacity-60"
+                    className="min-h-[44px] flex-1 rounded-lg bg-accent px-4 text-sm font-semibold text-on-accent hover:brightness-95 disabled:opacity-60"
                   >
                     {c.state === 'saving' ? 'Saving…' : `Add ${targetLabel(c.parsed.type).toLowerCase()}`}
                   </button>
@@ -427,7 +427,7 @@ export default function Import() {
                 <button
                   onClick={() => dismiss(c)}
                   disabled={c.state === 'saving'}
-                  className="min-h-[44px] rounded-lg px-4 text-sm font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-60 dark:text-slate-300 dark:hover:bg-slate-800"
+                  className="min-h-[44px] rounded-lg px-4 text-sm font-medium text-text-soft hover:bg-surface-2 disabled:opacity-60"
                 >
                   Dismiss
                 </button>

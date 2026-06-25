@@ -20,8 +20,8 @@ function formatBytes(n) {
 
 function Card({ title, children }) {
   return (
-    <section className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
-      <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-50">{title}</h2>
+    <section className="rounded-2xl bg-surface p-4 ring-1 ring-line">
+      <h2 className="mb-3 text-sm font-semibold text-text">{title}</h2>
       {children}
     </section>
   )
@@ -50,22 +50,22 @@ export default function Settings() {
   }
 
   const selectCls =
-    'w-full min-h-[44px] rounded-lg border border-slate-300 bg-white px-3 text-base text-slate-900 outline-none focus:border-sky-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-50'
+    'w-full min-h-[44px] rounded-lg border border-line bg-surface px-3 text-base text-text outline-none focus:border-accent'
 
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-slate-950">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
+    <div className="min-h-full bg-bg">
+      <header className="sticky top-0 z-10 border-b border-line bg-surface/90 backdrop-blur">
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3">
           <Link
             to="/trips"
             aria-label="Back to trips"
-            className="-ml-2 flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+            className="-ml-2 flex h-11 w-11 items-center justify-center rounded-lg text-text-dim hover:text-text"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
               <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </Link>
-          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Settings</h1>
+          <h1 className="text-lg font-semibold text-text">Settings</h1>
         </div>
       </header>
 
@@ -78,8 +78,8 @@ export default function Settings() {
                 onClick={() => chooseTheme(t.value)}
                 className={`min-h-[44px] rounded-lg text-sm font-medium ring-1 transition ${
                   theme === t.value
-                    ? 'bg-sky-600 text-white ring-sky-600'
-                    : 'bg-white text-slate-600 ring-slate-300 hover:bg-slate-50 dark:bg-slate-950 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-800'
+                    ? 'bg-accent text-on-accent ring-accent'
+                    : 'bg-surface text-text-soft ring-line hover:bg-bg'
                 }`}
               >
                 {t.label}
@@ -89,7 +89,7 @@ export default function Settings() {
         </Card>
 
         <Card title="Home currency">
-          <p className="mb-2 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mb-2 text-xs text-text-dim">
             Used as the default “To” in the currency calculator.
           </p>
           <select value={home} onChange={(e) => chooseHome(e.target.value)} className={selectCls}>
@@ -101,7 +101,7 @@ export default function Settings() {
 
         <Card title="Install app">
           {isStandalone() ? (
-            <p className="text-sm text-emerald-600 dark:text-emerald-400">
+            <p className="text-sm text-sage">
               Trip Vault is installed on this device. ✓
             </p>
           ) : installable ? (
@@ -110,17 +110,17 @@ export default function Settings() {
                 await promptInstall()
                 setInstallable(canInstall())
               }}
-              className="min-h-[44px] rounded-lg bg-sky-600 px-4 text-sm font-medium text-white hover:bg-sky-700"
+              className="min-h-[44px] rounded-lg bg-accent px-4 text-sm font-medium text-on-accent hover:brightness-95"
             >
               Add to home screen
             </button>
           ) : isIOS() ? (
-            <p className="text-sm text-slate-600 dark:text-slate-300">
+            <p className="text-sm text-text-soft">
               In Safari, tap the <span className="font-medium">Share</span> button, then{' '}
               <span className="font-medium">Add to Home Screen</span>.
             </p>
           ) : (
-            <p className="text-sm text-slate-600 dark:text-slate-300">
+            <p className="text-sm text-text-soft">
               Use your browser’s menu and choose <span className="font-medium">Install</span> /{' '}
               <span className="font-medium">Add to Home Screen</span>. (If it’s not offered, the app
               may already be installed.)
@@ -129,9 +129,9 @@ export default function Settings() {
         </Card>
 
         <Card title="Offline storage">
-          <p className="text-sm text-slate-600 dark:text-slate-300">
+          <p className="text-sm text-text-soft">
             Saved files cached for offline use:{' '}
-            <span className="font-medium text-slate-900 dark:text-slate-100">
+            <span className="font-medium text-text">
               {cache == null ? '…' : formatBytes(cache)}
             </span>
           </p>
