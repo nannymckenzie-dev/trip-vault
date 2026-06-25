@@ -40,7 +40,7 @@ anchored to the flight date ±1 day with `end` kept an hour under AeroAPI's +2-d
 | 3 | Storage buckets + RLS, document vault, ticket storage, pdf.js viewer, offline file cache | ✅ Done |
 | 4 | Gmail OAuth + Claude email import + review queue | ✅ Done — configured, deployed, connect→scan→review verified end-to-end |
 | 5 | AeroAPI flight status | ✅ Done — key set, deployed, live status verified with real flight data |
-| 6 | Read-only share links (`/share/:token`) | ⬜ |
+| 6 | Read-only share links (`/share/:token`) | 🟡 Built + deployed, API-verified — owner UI (modal/link/revoke) pending a browser check |
 | 7 | Budget tracker (`/trips/:id/budget`) | ⬜ |
 | 8 | Offline audit, install prompts, mobile polish, dark mode, empty/loading states | ⬜ |
 
