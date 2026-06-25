@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link, Navigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getCardType, formatMoneyField } from '../lib/cardTypes'
+import { categoryForSection } from '../lib/budget'
 import { formatDate, formatTime, formatDateTime } from '../lib/datetime'
 import { QuickTagPicker } from '../components/QuickTags'
 import FlightStatus from '../components/FlightStatus'
@@ -105,6 +106,19 @@ export default function CardDetail() {
 
   const confField = type.fields.find((f) => f.name === type.confirmationField)
   const confValue = type.confirmationField ? row[type.confirmationField] : null
+  const moneyField = type.fields.find((f) => f.type === 'money')
+  const moneyValue = moneyField ? row[moneyField.name] : null
+
+  function addToBudget() {
+    const p = new URLSearchParams({
+      amount: String(moneyValue),
+      category: categoryForSection(section),
+      description: type.title(row),
+    })
+    const cur = moneyField.currencyName && row[moneyField.currencyName]
+    if (cur) p.set('currency', cur)
+    navigate(`/trips/${tripId}/budget?${p.toString()}`)
+  }
   const detailFields = type.fields.filter(
     (f) => f.name !== type.confirmationField && f.type !== 'textarea'
   )
@@ -176,6 +190,15 @@ export default function CardDetail() {
 
         {section === 'flights' && row.flight_number && (
           <FlightStatus flightNumber={row.flight_number} date={row.depart_datetime} />
+        )}
+
+        {moneyValue != null && moneyValue !== '' && (
+          <button
+            onClick={addToBudget}
+            className="mt-4 w-full rounded-2xl border-2 border-dashed border-slate-300 py-3 text-sm font-medium text-slate-500 hover:border-sky-400 hover:text-sky-600 dark:border-slate-700 dark:text-slate-400"
+          >
+            + Add to budget
+          </button>
         )}
 
         {notesField && row[notesField.name] && (

@@ -11,10 +11,10 @@ import Spinner from '../components/Spinner'
 const LINK_SECTIONS = [
   { name: 'Tickets', to: 'tickets' },
   { name: 'Documents', to: 'documents' },
+  { name: 'Budget', to: 'budget' },
+  { name: 'Currency', to: 'currency' },
   { name: 'Import from email', to: 'import' },
 ]
-// Still to come (Phase 7).
-const PLACEHOLDER_SECTIONS = ['Budget']
 
 export default function TripDetail() {
   const { id } = useParams()
@@ -213,15 +213,6 @@ export default function TripDetail() {
                 <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
-          ))}
-          {PLACEHOLDER_SECTIONS.map((name) => (
-            <div
-              key={name}
-              className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800"
-            >
-              <span className="font-medium text-slate-600 dark:text-slate-300">{name}</span>
-              <span className="text-xs uppercase tracking-wide text-slate-400">Coming soon</span>
-            </div>
           ))}
         </div>
 

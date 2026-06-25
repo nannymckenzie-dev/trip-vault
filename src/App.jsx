@@ -11,6 +11,8 @@ import Documents from './pages/Documents'
 import Tickets from './pages/Tickets'
 import Import from './pages/Import'
 import Share from './pages/Share'
+import Budget from './pages/Budget'
+import Currency from './pages/Currency'
 
 export default function App() {
   return (
@@ -77,6 +79,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Import />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/trips/:id/budget"
+            element={
+              <ProtectedRoute>
+                <Budget />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/trips/:id/currency"
+            element={
+              <ProtectedRoute>
+                <Currency />
               </ProtectedRoute>
             }
           />

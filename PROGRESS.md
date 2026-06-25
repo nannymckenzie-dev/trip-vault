@@ -22,6 +22,22 @@ all env vars set in prod + preview + `.env.local`).
 - Minor: stored `gmail_address` is null (cosmetic; `getTokenInfo` display lookup failed
   non-fatally — scanning works off the refresh token).
 
+## Phase 7 — built (2026-06-25)
+
+Budget tracker (`/trips/:id/budget`) + currency calculator (`/trips/:id/currency`), both linked
+from trip detail. No DB migration (`trip_budgets` / `budget_entries` already existed).
+- `src/lib/currency.js` — offline-first rate cache (IndexedDB), free no-key source
+  `open.er-api.com/v6/latest/USD`; converts any pair through USD. `src/lib/budget.js` —
+  categories + section→category map.
+- `src/pages/Budget.jsx` — set total + currency, expense CRUD, progress bar, per-category
+  breakdown. Spent is summed in the budget currency via cached rates; entries in currencies
+  with no saved rate are counted at face value and flagged "approximate".
+- `src/pages/Currency.jsx` — From/To + amount, live result, swap, recent pairs (localStorage),
+  "Rates as of …", Refresh (disabled offline), offline empty state. Smart default From = trip's
+  most-common currency; To = USD (home currency hardcoded for now — make it a setting in Phase 8).
+- "Add to budget" on cost-bearing cards (CardDetail) deep-links to the budget add form with
+  amount/currency/category/description pre-filled via query params.
+
 ## Phase 5 — built & verified (2026-06-25)
 
 `api/flights/status.js` (header-authed AeroAPI v4 call, key server-side only),
@@ -31,7 +47,7 @@ far-out dates short-circuit (no query, no charge) with a friendly note; the quer
 anchored to the flight date ±1 day with `end` kept an hour under AeroAPI's +2-day limit
 (landing exactly on it 400s). Setup in `docs/phase5-setup.md`.
 
-## Status: Phases 1–3 complete + deployed; Phase 4 code complete — BLOCKED on owner setup above
+## Status: Phases 1–5 done & deployed; Phase 6 & 7 built & deployed — pending browser verification
 
 | Phase | Scope | Status |
 |-------|-------|--------|
@@ -40,8 +56,8 @@ anchored to the flight date ±1 day with `end` kept an hour under AeroAPI's +2-d
 | 3 | Storage buckets + RLS, document vault, ticket storage, pdf.js viewer, offline file cache | ✅ Done |
 | 4 | Gmail OAuth + Claude email import + review queue | ✅ Done — configured, deployed, connect→scan→review verified end-to-end |
 | 5 | AeroAPI flight status | ✅ Done — key set, deployed, live status verified with real flight data |
-| 6 | Read-only share links (`/share/:token`) | 🟡 Built + deployed, API-verified — owner UI (modal/link/revoke) pending a browser check |
-| 7 | Budget tracker (`/trips/:id/budget`) | ⬜ |
+| 6 | Read-only share links (`/share/:token`) | 🟡 Built + deployed, API-verified — owner UI pending a browser check |
+| 7 | Budget tracker + currency calculator | 🟡 Built + deployed — pending a browser check |
 | 8 | Offline audit, install prompts, mobile polish, dark mode, empty/loading states | ⬜ |
 
 ## Live environment
