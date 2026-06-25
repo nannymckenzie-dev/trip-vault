@@ -60,6 +60,7 @@ no recommended restaurants, no map-based planning. The app organizes what she al
 /trips/:id/documents        → Document vault
 /trips/:id/tickets          → Ticket storage
 /trips/:id/budget           → Budget tracker
+/trips/:id/currency         → Currency calculator
 /trips/:id/import           → Email import screen
 /share/:token               → Read-only shared trip view (no auth required)
 ```
@@ -89,7 +90,8 @@ The main hub for a single trip. Sections displayed as a vertical list of collaps
 6. **Tickets** — stored PDFs (museum tickets, show tickets, etc.)
 7. **Documents** — passport, visa, insurance vault
 8. **Budget** — spending tracker
-9. **Notes** — trip-level free text notepad
+9. **Currency** — quick foreign-exchange calculator
+10. **Notes** — trip-level free text notepad
 
 Each section has an "+ Add" button and shows a summary count ("3 flights").
 
@@ -387,6 +389,38 @@ When a card is added (hotel, activity, etc.) with a cost field, the app offers t
 
 ---
 
+## Currency Calculator: /trips/:id/currency
+
+A simple, fast foreign-exchange converter so Nanny can sanity-check prices in a foreign
+country without leaving the app or finding signal. Pairs naturally with the budget tracker.
+
+### Behavior:
+- Two currency selectors — **From** and **To** — plus an amount field
+- Result updates live as she types; a swap button flips From/To
+- Defaults are smart: **From** = the trip's spending currency (most common currency used
+  across the trip's budget/cards), **To** = her home currency (USD default, configurable
+  in settings). She can override both.
+- A short list of "recent" / pinned currency pairs for one-tap reuse
+- ISO 4217 currency codes throughout, consistent with the cost fields on cards
+
+### Rates & data source:
+- Rates fetched from a free no-key endpoint (e.g. `open.er-api.com/v6/latest/{base}`)
+- Fetched once per session (or on manual "Refresh rates" tap), not on every keystroke
+- A `currency_rates` cache in IndexedDB stores the latest rate table with a timestamp
+
+### Offline behavior (required — she'll use this abroad with no data):
+- The calculator works fully offline using the last cached rate table
+- A "Rates as of [date/time]" line is always visible so she knows how fresh they are
+- If rates have never been fetched and she's offline, show a clear empty state prompting
+  her to refresh once she has a connection
+- "Refresh rates" is disabled with a "No internet connection" message when offline
+
+### Scope guardrails:
+- This is a calculator, not a finance tool — no historical charts, no rate alerts, no
+  trading data. Just convert an amount between two currencies.
+
+---
+
 ## Offline Strategy
 
 This app must work offline. She will use it in foreign countries without data.
@@ -418,6 +452,11 @@ This app must work offline. She will use it in foreign countries without data.
 ### Email import:
 - Only works online
 - Clear messaging if user tries to import while offline
+
+### Currency rates:
+- Fetching fresh rates needs internet; the calculator itself works offline
+- Last fetched rate table is cached in IndexedDB and used when offline
+- "Rates as of [time]" shown so stale rates are never mistaken for live ones
 
 ---
 
@@ -715,11 +754,14 @@ VITE_APP_URL=  # used for share link generation
 - Public /share/:token route (no auth)
 - Revoke share functionality
 
-### Phase 7: Budget
+### Phase 7: Budget & Currency
 - Budget setup (total + category budgets)
 - Expense entry (add/edit/delete)
 - Summary view with progress bars
 - "Add to budget" shortcut from card cost fields
+- Currency calculator (From/To converter, swap, smart defaults)
+- Rate fetching from free no-key endpoint + IndexedDB rate cache
+- Offline support with "Rates as of [time]" freshness indicator
 
 ### Phase 8: Polish
 - Full offline audit — every screen tested without network
