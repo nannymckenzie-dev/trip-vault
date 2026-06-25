@@ -24,10 +24,10 @@ function tone(flight) {
 }
 
 const TONES = {
-  red: 'bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300',
-  amber: 'bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300',
-  emerald: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300',
-  slate: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+  red: 'bg-red-500/10 text-red-600',
+  amber: 'bg-accent/20 text-accent-strong',
+  emerald: 'bg-sage/20 text-sage',
+  slate: 'bg-line/40 text-text-dim',
 }
 
 function Leg({ label, place, scheduled, actual, estimated, delay }) {
@@ -35,12 +35,10 @@ function Leg({ label, place, scheduled, actual, estimated, delay }) {
   return (
     <div className="flex items-start justify-between gap-4 px-4 py-3">
       <div>
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{label}</p>
-        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-          {place?.code || '—'}
-        </p>
+        <p className="label-caps text-[10px] text-text-dim" style={{ letterSpacing: '0.14em' }}>{label}</p>
+        <p className="font-display text-base font-bold text-text">{place?.code || '—'}</p>
         {(place?.terminal || place?.gate) && (
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-text-dim">
             {[place.terminal && `Term ${place.terminal}`, place.gate && `Gate ${place.gate}`]
               .filter(Boolean)
               .join(' · ')}
@@ -52,24 +50,22 @@ function Leg({ label, place, scheduled, actual, estimated, delay }) {
           <p
             className={
               live && live !== scheduled
-                ? 'text-xs text-slate-400 line-through'
-                : 'text-sm font-medium text-slate-900 dark:text-slate-100'
+                ? 'text-xs text-text-dim line-through'
+                : 'text-sm font-medium text-text'
             }
           >
             {formatDateTime(scheduled)}
           </p>
         )}
         {live && live !== scheduled && (
-          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-            {formatDateTime(live)}
-          </p>
+          <p className="text-sm font-semibold text-text">{formatDateTime(live)}</p>
         )}
         {delayLabel(delay) && (
           <p
             className={
               (delay ?? 0) > 0
-                ? 'text-xs font-medium text-amber-600 dark:text-amber-400'
-                : 'text-xs text-emerald-600 dark:text-emerald-400'
+                ? 'text-xs font-medium text-accent-strong'
+                : 'text-xs text-sage'
             }
           >
             {delayLabel(delay)}
@@ -151,36 +147,39 @@ export default function FlightStatus({ flightNumber, date }) {
   const badge = TONES[tone(flight)]
 
   return (
-    <div className="mt-4 rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+    <div
+      className="mt-4 rounded-card p-4 ring-1 ring-sage/40"
+      style={{ backgroundColor: 'color-mix(in srgb, var(--color-sage) 13%, transparent)' }}
+    >
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Live status</p>
+        <p className="label-caps text-[10px] text-text-dim" style={{ letterSpacing: '0.16em' }}>
+          Flight status
+        </p>
         <button
           onClick={check}
           disabled={loading || !online}
-          className="min-h-[40px] rounded-lg bg-sky-600 px-3 text-sm font-medium text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="min-h-[40px] rounded-lg border border-sage px-3 text-sm font-semibold text-sage transition hover:bg-sage/10 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? 'Checking…' : flight ? 'Refresh' : 'Check Status'}
         </button>
       </div>
 
       {!online && (
-        <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-2 text-xs text-text-dim">
           No internet connection — showing last fetched status.
         </p>
       )}
-      {error && online && (
-        <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>
-      )}
-      {info && <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{info}</p>}
+      {error && online && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {info && <p className="mt-2 text-sm text-text-dim">{info}</p>}
 
       {flight ? (
         <div className="mt-3">
           {flight.status && (
-            <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${badge}`}>
+            <span className={`inline-block rounded-pill px-3 py-1 text-xs font-bold ${badge}`}>
               {flight.cancelled ? 'Cancelled' : flight.status}
             </span>
           )}
-          <div className="mt-3 divide-y divide-slate-200 overflow-hidden rounded-xl ring-1 ring-slate-200 dark:divide-slate-800 dark:ring-slate-800">
+          <div className="mt-3 divide-y divide-line overflow-hidden rounded-xl bg-surface ring-1 ring-line">
             <Leg
               label="Departure"
               place={flight.origin}
@@ -199,7 +198,7 @@ export default function FlightStatus({ flightNumber, date }) {
             />
           </div>
           {fetchedAt && (
-            <p className="mt-2 text-xs text-slate-400">
+            <p className="mt-2 text-xs text-text-dim">
               As of {new Date(fetchedAt).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
               {stale && ' · tap Refresh for the latest'}
             </p>
@@ -208,7 +207,7 @@ export default function FlightStatus({ flightNumber, date }) {
       ) : (
         !error &&
         !info && (
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-2 text-sm text-text-dim">
             Tap “Check Status” for live departure and arrival times.
           </p>
         )

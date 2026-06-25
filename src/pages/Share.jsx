@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom'
 import { CARD_SECTIONS, CARD_TYPES, formatMoneyField } from '../lib/cardTypes'
 import { formatDate, formatTime, formatDateTime, formatMoney } from '../lib/datetime'
 import { formatDateRange } from '../lib/trips'
+import Wordmark from '../components/Wordmark'
+import LabelFrame from '../components/LabelFrame'
 import Spinner from '../components/Spinner'
 
 function displayValue(field, row) {
@@ -29,17 +31,15 @@ function SharedCard({ type, row }) {
   )
   const notesField = type.fields.find((f) => f.type === 'textarea')
   return (
-    <div className="rounded-xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
-      <p className="font-semibold text-slate-900 dark:text-slate-50">{type.title(row)}</p>
-      {type.subtitle(row) && (
-        <p className="text-xs text-slate-500 dark:text-slate-400">{type.subtitle(row)}</p>
-      )}
+    <div className="rounded-card bg-surface p-4 ring-1 ring-line">
+      <p className="font-display font-semibold text-text">{type.title(row)}</p>
+      {type.subtitle(row) && <p className="text-xs text-text-dim">{type.subtitle(row)}</p>}
       {confValue && (
         <p className="mt-2 text-sm">
-          <span className="text-slate-500 dark:text-slate-400">Confirmation: </span>
-          <span className="select-all font-bold tracking-wide text-slate-900 dark:text-slate-50">
-            {confValue}
-          </span>
+          <span className="label-caps text-[10px] text-text-dim" style={{ letterSpacing: '0.14em' }}>
+            Confirmation
+          </span>{' '}
+          <span className="select-all font-display font-bold tracking-wide text-text">{confValue}</span>
         </p>
       )}
       <dl className="mt-2 space-y-1">
@@ -48,16 +48,14 @@ function SharedCard({ type, row }) {
           if (!val) return null
           return (
             <div key={field.name} className="flex justify-between gap-4 text-sm">
-              <dt className="text-slate-500 dark:text-slate-400">{field.label}</dt>
-              <dd className="text-right font-medium text-slate-900 dark:text-slate-100">{val}</dd>
+              <dt className="text-text-dim">{field.label}</dt>
+              <dd className="text-right font-medium text-text">{val}</dd>
             </div>
           )
         })}
       </dl>
       {notesField && row[notesField.name] && (
-        <p className="mt-2 whitespace-pre-wrap text-sm text-slate-600 dark:text-slate-300">
-          {row[notesField.name]}
-        </p>
+        <p className="mt-2 whitespace-pre-wrap text-sm text-text-soft">{row[notesField.name]}</p>
       )}
     </div>
   )
@@ -65,22 +63,22 @@ function SharedCard({ type, row }) {
 
 function FileRow({ title, subtitle, url }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+    <div className="flex items-center justify-between gap-3 rounded-card bg-surface px-4 py-3 ring-1 ring-line">
       <div className="min-w-0">
-        <p className="truncate font-medium text-slate-900 dark:text-slate-50">{title}</p>
-        {subtitle && <p className="truncate text-xs text-slate-500 dark:text-slate-400">{subtitle}</p>}
+        <p className="truncate font-medium text-text">{title}</p>
+        {subtitle && <p className="truncate text-xs text-text-dim">{subtitle}</p>}
       </div>
       {url ? (
         <a
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="shrink-0 rounded-lg bg-sky-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-sky-700"
+          className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-sm font-bold text-on-accent hover:brightness-95"
         >
           View
         </a>
       ) : (
-        <span className="shrink-0 text-xs text-slate-400">Unavailable</span>
+        <span className="shrink-0 text-xs text-text-dim">Unavailable</span>
       )}
     </div>
   )
@@ -114,7 +112,7 @@ export default function Share() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <div className="flex min-h-screen items-center justify-center bg-bg">
         <Spinner />
       </div>
     )
@@ -122,34 +120,63 @@ export default function Share() {
 
   if (error || !data) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-2 bg-slate-50 px-6 text-center dark:bg-slate-950">
-        <p className="text-lg font-semibold text-slate-900 dark:text-slate-50">Trip Vault</p>
-        <p className="text-slate-600 dark:text-slate-300">{error || 'Trip not found.'}</p>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-bg px-6 text-center">
+        <Wordmark size={26} />
+        <p className="text-text-soft">{error || 'Trip not found.'}</p>
       </div>
     )
   }
 
   const { trip, settings } = data
+  const signTokens = {
+    '--color-text': '#2A2724',
+    '--color-text-soft': '#4A453F',
+    '--color-accent-strong': '#8A5A33',
+  }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-        <div className="mx-auto max-w-3xl px-4 py-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-sky-600 dark:text-sky-400">
-            Shared itinerary · read-only
-          </p>
-          <h1 className="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-50">{trip.name}</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            {[formatDateRange(trip.start_date, trip.end_date), trip.destination]
-              .filter(Boolean)
-              .join(' · ')}
-          </p>
+    <div className="min-h-screen bg-bg">
+      {/* Wood header band with the linen brand sign (always light, like the real sign). */}
+      <header className="wood-band px-4 pb-9 pt-12">
+        <div className="mx-auto max-w-md" style={signTokens}>
+          <LabelFrame
+            borderColor="#2A2724"
+            maskColor="#FBF8F1"
+            className="rounded-[10px] bg-[#FBF8F1] px-7 py-7 text-center shadow-2xl"
+          >
+            <Wordmark full size={40} />
+          </LabelFrame>
         </div>
       </header>
 
+      {/* Itinerary banner */}
+      <div className="border-b border-line bg-surface">
+        <div className="mx-auto max-w-3xl px-4 py-4">
+          <p className="label-caps text-[10px] text-text-dim" style={{ letterSpacing: '0.18em' }}>
+            Shared itinerary
+          </p>
+          <div className="mt-1 flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="font-display text-2xl font-semibold text-text">{trip.name}</h1>
+              <p className="text-sm text-text-soft">
+                {[formatDateRange(trip.start_date, trip.end_date), trip.destination]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </p>
+            </div>
+            <span className="shrink-0 rounded-pill border border-line px-2 py-0.5 label-caps text-[9.5px] text-text-dim" style={{ letterSpacing: '0.13em' }}>
+              Read only
+            </span>
+          </div>
+          <p className="mt-2 text-center text-[11.5px] italic text-text-dim">
+            Read-only. Look, don’t touch — and yes, we’re watching.
+          </p>
+        </div>
+      </div>
+
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-6">
         {trip.cover_photo_url && (
-          <img src={trip.cover_photo_url} alt="" className="aspect-[16/9] w-full rounded-2xl object-cover" />
+          <img src={trip.cover_photo_url} alt="" className="aspect-[16/9] w-full rounded-hero object-cover" />
         )}
 
         {CARD_SECTIONS.map((section) => {
@@ -158,7 +185,9 @@ export default function Share() {
           const type = CARD_TYPES[section]
           return (
             <section key={section} className="space-y-2">
-              <h2 className="px-1 font-semibold text-slate-900 dark:text-slate-50">{type.plural}</h2>
+              <h2 className="px-1 label-caps text-xs text-text" style={{ letterSpacing: '0.16em' }}>
+                {type.plural}
+              </h2>
               {items.map((row) => (
                 <SharedCard key={row.id} type={type} row={row} />
               ))}
@@ -168,7 +197,7 @@ export default function Share() {
 
         {settings.tickets && data.tickets?.length > 0 && (
           <section className="space-y-2">
-            <h2 className="px-1 font-semibold text-slate-900 dark:text-slate-50">Tickets</h2>
+            <h2 className="px-1 label-caps text-xs text-text" style={{ letterSpacing: '0.16em' }}>Tickets</h2>
             {data.tickets.map((t) => (
               <FileRow key={t.id} title={t.name || 'Ticket'} subtitle={formatDate(t.use_date)} url={t.url} />
             ))}
@@ -177,7 +206,7 @@ export default function Share() {
 
         {settings.documents && data.documents?.length > 0 && (
           <section className="space-y-2">
-            <h2 className="px-1 font-semibold text-slate-900 dark:text-slate-50">Documents</h2>
+            <h2 className="px-1 label-caps text-xs text-text" style={{ letterSpacing: '0.16em' }}>Documents</h2>
             {data.documents.map((d) => (
               <FileRow
                 key={d.id}
@@ -191,31 +220,34 @@ export default function Share() {
 
         {settings.budget && data.budget && (
           <section className="space-y-2">
-            <h2 className="px-1 font-semibold text-slate-900 dark:text-slate-50">Budget</h2>
-            <div className="rounded-xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+            <h2 className="px-1 label-caps text-xs text-text" style={{ letterSpacing: '0.16em' }}>Budget</h2>
+            <div className="rounded-card bg-surface p-4 ring-1 ring-line">
               {data.budget.total_budget != null && (
-                <p className="mb-2 text-sm text-slate-600 dark:text-slate-300">
+                <p className="mb-2 text-sm text-text-soft">
                   Total budget:{' '}
-                  <span className="font-semibold text-slate-900 dark:text-slate-50">
+                  <span className="font-semibold text-text">
                     {formatMoney(data.budget.total_budget, data.budget.currency)}
                   </span>
                 </p>
               )}
               {(data.budget.entries ?? []).map((e, i) => (
-                <div key={i} className="flex justify-between gap-4 border-t border-slate-100 py-2 text-sm first:border-t-0 dark:border-slate-800">
-                  <span className="text-slate-600 dark:text-slate-300">
+                <div key={i} className="flex justify-between gap-4 border-t border-line py-2 text-sm first:border-t-0">
+                  <span className="text-text-soft">
                     {[e.category, e.description].filter(Boolean).join(' · ') || 'Expense'}
                   </span>
-                  <span className="font-medium text-slate-900 dark:text-slate-100">
-                    {formatMoney(e.amount, e.currency)}
-                  </span>
+                  <span className="font-medium text-text">{formatMoney(e.amount, e.currency)}</span>
                 </div>
               ))}
             </div>
           </section>
         )}
 
-        <p className="pt-2 text-center text-xs text-slate-400">Shared from Trip Vault</p>
+        <footer className="pt-4 text-center">
+          <p className="label-caps text-[9.5px] text-text-dim" style={{ letterSpacing: '0.22em' }}>
+            Established 2003 · Sarcasm, Sass &amp; Class
+          </p>
+          <p className="mt-1 text-xs text-text-dim">Kept tidy by m⁶&amp;co · Trip Vault</p>
+        </footer>
       </main>
     </div>
   )

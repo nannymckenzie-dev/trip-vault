@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import Wordmark from '../components/Wordmark'
 
 export default function Login() {
   const { session, signIn } = useAuth()
@@ -30,27 +31,20 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-full items-center justify-center bg-slate-50 px-4 py-12 dark:bg-slate-950">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <img src="/icon.svg" alt="" className="mx-auto h-16 w-16" />
-          <h1 className="mt-4 text-2xl font-semibold text-slate-900 dark:text-slate-50">
-            Trip Vault
-          </h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Sign in to your trip command center
-          </p>
+    <div className="relative flex min-h-full items-center justify-center bg-bg px-4 py-12">
+      <div className="brand-grain" />
+      <div className="relative w-full max-w-sm">
+        <div className="mb-8 flex flex-col items-center text-center">
+          <Wordmark full size={44} />
+          <p className="mt-4 text-sm text-text-soft">Sign in to your trip command center</p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800"
+          className="space-y-4 rounded-card bg-surface p-6 shadow-[0_6px_18px_rgba(42,39,36,.10)] ring-1 ring-line"
         >
           <div>
-            <label
-              htmlFor="email"
-              className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"
-            >
+            <label htmlFor="email" className="mb-1 block label-caps text-[10px] text-text-dim" style={{ letterSpacing: '0.14em' }}>
               Email
             </label>
             <input
@@ -60,15 +54,12 @@ export default function Login() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-50"
+              className="w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-base text-text outline-none focus:border-accent"
             />
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"
-            >
+            <label htmlFor="password" className="mb-1 block label-caps text-[10px] text-text-dim" style={{ letterSpacing: '0.14em' }}>
               Password
             </label>
             <input
@@ -78,12 +69,12 @@ export default function Login() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-50"
+              className="w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-base text-text outline-none focus:border-accent"
             />
           </div>
 
           {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">
+            <p className="rounded-lg border border-line bg-surface-2 px-3 py-2 text-sm text-red-600">
               {error}
             </p>
           )}
@@ -91,7 +82,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={submitting}
-            className="min-h-[44px] w-full rounded-lg bg-sky-600 px-4 py-2.5 text-base font-semibold text-white transition hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/50 disabled:opacity-60"
+            className="min-h-[44px] w-full rounded-lg bg-accent px-4 py-2.5 text-base font-bold text-on-accent transition hover:brightness-95 active:scale-[.98] disabled:opacity-60"
           >
             {submitting ? 'Signing in…' : 'Sign in'}
           </button>

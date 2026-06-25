@@ -21,8 +21,8 @@ export default function SyncStatus({ syncedAt }) {
   }, [])
 
   if (!online) {
-    return <span className="text-amber-600 dark:text-amber-400">Offline · showing saved data</span>
+    return <span className="text-accent-strong">Offline · showing saved data</span>
   }
   if (!syncedAt) return null
-  return <span className="text-slate-400 dark:text-slate-500">Synced {timeAgo(syncedAt)}</span>
+  return <span className="text-text-dim">Synced {timeAgo(syncedAt)}</span>
 }

@@ -36,8 +36,8 @@ export function QuickTagPicker({ value = [], onChange }) {
             aria-pressed={active}
             className={`min-h-[44px] rounded-full px-3 text-sm font-medium transition ${
               active
-                ? tag.classes + ' ring-2 ring-offset-1 ring-current/40 dark:ring-offset-slate-900'
-                : 'bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'
+                ? tag.classes + ' ring-2 ring-offset-1 ring-current/40 ring-offset-surface'
+                : 'border border-line bg-surface-2 text-text-dim hover:bg-line/40'
             }`}
           >
             {tag.label}

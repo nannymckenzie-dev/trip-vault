@@ -15,8 +15,8 @@ export default defineConfig({
         name: 'Trip Vault',
         short_name: 'Trip Vault',
         description: 'Your personal trip command center — offline-ready travel vault.',
-        theme_color: '#0f172a',
-        background_color: '#0f172a',
+        theme_color: '#f2ede3',
+        background_color: '#f2ede3',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',
@@ -50,6 +50,22 @@ export default defineConfig({
                 maxEntries: 200,
                 maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
               },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Google Fonts stylesheet — refresh in the background, serve cached.
+            urlPattern: ({ url }) => url.hostname === 'fonts.googleapis.com',
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'google-fonts-css' },
+          },
+          {
+            // Font files — cache hard so the brand type works fully offline.
+            urlPattern: ({ url }) => url.hostname === 'fonts.gstatic.com',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-files',
+              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 },
               cacheableResponse: { statuses: [0, 200] },
             },
           },

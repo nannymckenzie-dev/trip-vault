@@ -6,6 +6,7 @@ import { formatDateRange, getTripStatus } from '../lib/trips'
 import SectionPanel from '../components/SectionPanel'
 import ShareModal from '../components/ShareModal'
 import SyncStatus from '../components/SyncStatus'
+import StatusPill from '../components/StatusPill'
 import Spinner from '../components/Spinner'
 
 // File sections now live on their own pages (Phase 3).
@@ -111,7 +112,7 @@ export default function TripDetail() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <div className="flex h-full items-center justify-center bg-bg">
         <Spinner />
       </div>
     )
@@ -119,9 +120,9 @@ export default function TripDetail() {
 
   if (error || !trip) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 bg-slate-50 px-4 text-center dark:bg-slate-950">
-        <p className="text-slate-600 dark:text-slate-300">{error || 'Trip not found.'}</p>
-        <Link to="/trips" className="font-medium text-sky-600 dark:text-sky-400">
+      <div className="flex h-full flex-col items-center justify-center gap-3 bg-bg px-4 text-center">
+        <p className="text-text-soft">{error || 'Trip not found.'}</p>
+        <Link to="/trips" className="font-medium text-accent-strong">
           ← Back to trips
         </Link>
       </div>
@@ -129,55 +130,53 @@ export default function TripDetail() {
   }
 
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-slate-950">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
-        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
+    <div className="relative min-h-full bg-bg">
+      <div className="brand-grain" />
+      <header className="sticky top-0 z-10 border-b border-line bg-surface/90 backdrop-blur">
+        <div className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-3">
           <Link
             to="/trips"
             aria-label="Back to trips"
-            className="-ml-2 flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+            className="-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-dim hover:text-text"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
               <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </Link>
           <div className="min-w-0 flex-1">
-            <h1 className="truncate text-lg font-semibold text-slate-900 dark:text-slate-50">
-              {trip.name}
-            </h1>
-            <p className="truncate text-xs text-slate-500 dark:text-slate-400">
-              {formatDateRange(trip.start_date, trip.end_date)} · {getTripStatus(trip)}
-            </p>
+            <h1 className="truncate font-display text-xl font-semibold text-text">{trip.name}</h1>
+            <div className="flex items-center gap-2 text-xs text-text-soft">
+              <StatusPill status={getTripStatus(trip)} />
+              <span className="truncate">{formatDateRange(trip.start_date, trip.end_date)}</span>
+            </div>
             <p className="truncate text-[11px]">
               <SyncStatus syncedAt={syncedAt} />
             </p>
           </div>
           <button
             onClick={() => setShareOpen(true)}
-            className="flex min-h-[44px] items-center rounded-lg px-3 text-sm font-medium text-sky-600 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-950/40"
+            className="flex min-h-[44px] shrink-0 items-center rounded-lg border border-accent-strong px-3 text-sm font-semibold text-accent-strong hover:bg-surface-2"
           >
             Share
           </button>
           <Link
             to={`/trips/${id}/edit`}
-            className="flex min-h-[44px] items-center rounded-lg px-3 text-sm font-medium text-sky-600 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-950/40"
+            className="flex min-h-[44px] shrink-0 items-center rounded-lg bg-accent px-3 text-sm font-bold text-on-accent hover:brightness-95"
           >
             Edit
           </Link>
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl space-y-3 px-4 py-5">
+      <main className="relative mx-auto max-w-3xl space-y-3 px-4 py-5">
         {trip.cover_photo_url && (
           <img
             src={trip.cover_photo_url}
             alt=""
-            className="aspect-[16/9] w-full rounded-2xl object-cover"
+            className="aspect-[16/9] w-full rounded-hero object-cover"
           />
         )}
-        {trip.destination && (
-          <p className="px-1 text-slate-700 dark:text-slate-300">{trip.destination}</p>
-        )}
+        {trip.destination && <p className="px-1 text-text-soft">{trip.destination}</p>}
 
         {CARD_SECTIONS.map((s) => (
           <SectionPanel
@@ -190,14 +189,14 @@ export default function TripDetail() {
         ))}
 
         {/* Notes — trip-level free-text notepad. */}
-        <section className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+        <section className="rounded-card bg-surface p-4 ring-1 ring-line">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="font-semibold text-slate-900 dark:text-slate-50">Notes</h2>
+            <h2 className="font-display font-semibold text-text">Notes</h2>
             {notesDirty && (
               <button
                 onClick={saveNotes}
                 disabled={notesSaving}
-                className="rounded-lg bg-sky-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-sky-500 disabled:opacity-60"
+                className="rounded-lg bg-accent px-3 py-1.5 text-sm font-bold text-on-accent hover:brightness-95 disabled:opacity-60"
               >
                 {notesSaving ? 'Saving…' : 'Save'}
               </button>
@@ -211,7 +210,7 @@ export default function TripDetail() {
               setNotesDirty(true)
             }}
             placeholder="Anything trip-wide you want to jot down…"
-            className="w-full resize-y rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-50"
+            className="w-full resize-y rounded-lg border border-line bg-surface px-3 py-2.5 text-base text-text outline-none focus:border-accent"
           />
         </section>
 
@@ -221,10 +220,12 @@ export default function TripDetail() {
             <Link
               key={s.to}
               to={`/trips/${id}/${s.to}`}
-              className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 ring-1 ring-slate-200 transition hover:ring-sky-400 dark:bg-slate-900 dark:ring-slate-800"
+              className="flex items-center justify-between rounded-card bg-surface px-4 py-3 ring-1 ring-line transition hover:ring-accent"
             >
-              <span className="font-medium text-slate-900 dark:text-slate-50">{s.name}</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4 text-slate-400">
+              <span className="label-caps text-xs text-text" style={{ letterSpacing: '0.14em' }}>
+                {s.name}
+              </span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4 text-text-dim">
                 <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
@@ -234,7 +235,7 @@ export default function TripDetail() {
         <button
           onClick={handleDelete}
           disabled={deleting}
-          className="mt-4 min-h-[44px] rounded-lg px-4 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-60 dark:text-red-400 dark:hover:bg-red-950/40"
+          className="mt-4 min-h-[44px] rounded-lg px-4 text-sm font-medium text-red-600 hover:bg-red-600/10 disabled:opacity-60"
         >
           {deleting ? 'Deleting…' : 'Delete trip'}
         </button>

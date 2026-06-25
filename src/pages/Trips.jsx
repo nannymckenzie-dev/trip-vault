@@ -1,23 +1,30 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { sortTrips } from '../lib/trips'
+import { sortTrips, getTripStatus, TRIP_STATUS } from '../lib/trips'
 import TripCard from '../components/TripCard'
+import Wordmark from '../components/Wordmark'
+import DoubleArrow from '../components/Arrow'
 import Spinner from '../components/Spinner'
+
+const FILTERS = [
+  { key: 'all', label: 'All' },
+  { key: 'upcoming', label: 'Upcoming' },
+  { key: 'past', label: 'Past' },
+]
 
 export default function Trips() {
   const { user, signOut } = useAuth()
   const [trips, setTrips] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [filter, setFilter] = useState('all')
 
   useEffect(() => {
     let active = true
     async function load() {
-      const { data, error: fetchError } = await supabase
-        .from('trips')
-        .select('*')
+      const { data, error: fetchError } = await supabase.from('trips').select('*')
       if (!active) return
       if (fetchError) setError(fetchError.message)
       else setTrips(sortTrips(data ?? []))
@@ -29,21 +36,26 @@ export default function Trips() {
     }
   }, [])
 
+  const visible = useMemo(() => {
+    if (filter === 'all') return trips
+    return trips.filter((t) => {
+      const s = getTripStatus(t)
+      if (filter === 'past') return s === TRIP_STATUS.PAST
+      return s !== TRIP_STATUS.PAST // upcoming + in-progress
+    })
+  }, [trips, filter])
+
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-slate-950">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
+    <div className="relative min-h-full bg-bg">
+      <div className="brand-grain" />
+      <header className="sticky top-0 z-10 border-b border-line bg-surface/90 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2">
-            <img src="/icon.svg" alt="" className="h-7 w-7" />
-            <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
-              Trips
-            </h1>
-          </div>
+          <Wordmark size={23} />
           <div className="flex items-center gap-1">
             <Link
               to="/settings"
               aria-label="Settings"
-              className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+              className="flex h-11 w-11 items-center justify-center rounded-xl text-text-dim hover:text-text"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
                 <circle cx="12" cy="12" r="3" />
@@ -53,7 +65,7 @@ export default function Trips() {
             <button
               onClick={() => signOut()}
               title={user?.email}
-              className="min-h-[44px] rounded-lg px-3 text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+              className="min-h-[44px] rounded-xl px-3 text-sm font-medium text-text-dim hover:text-text"
             >
               Sign out
             </button>
@@ -61,35 +73,71 @@ export default function Trips() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-5">
-        <Link
-          to="/trips/new"
-          className="mb-5 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-sky-600 px-4 py-2.5 text-base font-semibold text-white shadow-sm transition hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
-            <path d="M12 5v14M5 12h14" strokeLinecap="round" />
-          </svg>
-          New Trip
-        </Link>
+      <main className="relative mx-auto max-w-5xl px-4 py-5">
+        <div className="mb-4 flex items-center gap-3">
+          <Link
+            to="/trips/new"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-base font-bold text-on-accent shadow-[0_3px_10px_rgba(138,90,51,.25)] transition hover:brightness-95 active:scale-[.98]"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-5 w-5">
+              <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+            </svg>
+            New Trip
+          </Link>
+          {trips.length > 0 && (
+            <div className="flex gap-1.5">
+              {FILTERS.map((f) => (
+                <button
+                  key={f.key}
+                  onClick={() => setFilter(f.key)}
+                  className={`min-h-[40px] rounded-full px-3 text-[11px] label-caps transition ${
+                    filter === f.key
+                      ? 'bg-text text-bg'
+                      : 'border border-line text-text-soft hover:bg-surface'
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {loading ? (
           <div className="flex justify-center py-20">
             <Spinner />
           </div>
         ) : error ? (
-          <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">
+          <p className="rounded-card border border-line bg-surface px-4 py-3 text-sm text-accent-strong">
             Couldn’t load trips: {error}
           </p>
         ) : trips.length === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-slate-200 py-16 text-center dark:border-slate-800">
-            <p className="text-slate-500 dark:text-slate-400">No trips yet.</p>
-            <p className="mt-1 text-sm text-slate-400 dark:text-slate-500">
-              Tap “New Trip” to add your first one.
+          <div className="mx-auto mt-6 max-w-sm rounded-card bg-surface p-8 text-center shadow-[0_6px_18px_rgba(42,39,36,.10)] ring-1 ring-line">
+            <DoubleArrow width={56} className="mx-auto text-text-dim" />
+            <h2 className="mt-4 font-display text-2xl font-semibold text-text">
+              Nothing booked. How responsible.
+            </h2>
+            <p className="mt-2 text-sm text-text-soft">
+              Start a trip and we’ll keep the confirmation numbers you’ll inevitably lose.
+            </p>
+            <Link
+              to="/trips/new"
+              className="mt-5 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-accent px-5 py-3 text-base font-bold text-on-accent shadow-[0_3px_10px_rgba(138,90,51,.25)] hover:brightness-95 active:scale-[.98]"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-5 w-5">
+                <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+              </svg>
+              New Trip
+            </Link>
+            <p className="mt-5 label-caps text-[10px] text-text-dim" style={{ letterSpacing: '0.28em' }}>
+              Established 2003
             </p>
           </div>
+        ) : visible.length === 0 ? (
+          <p className="py-16 text-center text-sm text-text-dim">No {filter} trips.</p>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
-            {trips.map((trip) => (
+            {visible.map((trip) => (
               <TripCard key={trip.id} trip={trip} />
             ))}
           </div>
