@@ -11,19 +11,6 @@ function normIdent(s) {
   return String(s || '').toUpperCase().replace(/\s+/g, '')
 }
 
-// AeroAPI wants a [start, end) window. The card's date can be a plain date or a
-// timestamptz; widen by a day on each side to absorb timezone / overnight skew,
-// then we pick the flight whose scheduled departure is closest to the target.
-function dayWindow(dateStr) {
-  const base = dateStr ? new Date(dateStr) : new Date()
-  if (Number.isNaN(base.getTime())) return null
-  const start = new Date(base)
-  start.setUTCDate(start.getUTCDate() - 1)
-  const end = new Date(base)
-  end.setUTCDate(end.getUTCDate() + 2)
-  return { start: start.toISOString(), end: end.toISOString(), target: base }
-}
-
 function pickFlight(flights, target) {
   if (!flights?.length) return null
   if (!target) return flights[0]
@@ -95,16 +82,32 @@ export default async function handler(req, res) {
     return
   }
 
-  const win = dayWindow(req.body?.date)
-  if (!win) {
+  const target = req.body?.date ? new Date(req.body.date) : new Date()
+  if (Number.isNaN(target.getTime())) {
     res.status(400).json({ error: 'Invalid flight date' })
     return
   }
 
+  // AeroAPI only tracks flights within ~2 days of departure. For trips further
+  // out there's no live data yet — say so instead of erroring.
+  const DAY = 86400000
+  const now = Date.now()
+  if ((target.getTime() - now) / DAY > 2) {
+    res.status(200).json({
+      unavailable: true,
+      message: 'Live status is available starting about 2 days before departure.',
+    })
+    return
+  }
+
+  // Valid [start, end) window, clamped to AeroAPI's +2-day future bound.
+  const start = new Date(target.getTime() - DAY).toISOString()
+  const end = new Date(Math.min(target.getTime() + 2 * DAY, now + 2 * DAY)).toISOString()
+
   try {
     const url =
       `${AEROAPI_BASE}/flights/${encodeURIComponent(ident)}` +
-      `?start=${encodeURIComponent(win.start)}&end=${encodeURIComponent(win.end)}`
+      `?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`
     const r = await fetch(url, { headers: { 'x-apikey': apiKey, Accept: 'application/json' } })
 
     if (r.status === 404) {
@@ -115,13 +118,21 @@ export default async function handler(req, res) {
       res.status(502).json({ error: 'Flight status key was rejected by AeroAPI.' })
       return
     }
+    // Out-of-range date (too far past/future) → 400. Treat as "no live data".
+    if (r.status === 400) {
+      res.status(200).json({
+        unavailable: true,
+        message: 'Live status isn’t available for this flight date.',
+      })
+      return
+    }
     if (!r.ok) {
       res.status(502).json({ error: `Flight status lookup failed (${r.status}).` })
       return
     }
 
     const data = await r.json()
-    const flight = pickFlight(data.flights, win.target)
+    const flight = pickFlight(data.flights, target)
     if (!flight) {
       res.status(404).json({ error: `No flight found for ${ident} around that date.` })
       return

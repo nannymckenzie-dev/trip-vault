@@ -87,6 +87,7 @@ export default function FlightStatus({ flightNumber, date }) {
   const [fetchedAt, setFetchedAt] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [info, setInfo] = useState(null)
   const [online, setOnline] = useState(typeof navigator === 'undefined' ? true : navigator.onLine)
 
   // Show the last cached result on mount — without hitting the network.
@@ -116,6 +117,7 @@ export default function FlightStatus({ flightNumber, date }) {
 
   const check = useCallback(async () => {
     setError(null)
+    setInfo(null)
     if (!navigator.onLine) {
       setError('No internet connection')
       return
@@ -130,6 +132,11 @@ export default function FlightStatus({ flightNumber, date }) {
     setLoading(true)
     try {
       const payload = await fetchFlightStatus(flightNumber, date)
+      // Trip too far out (or out of AeroAPI's window) — informational, not an error.
+      if (payload.unavailable) {
+        setInfo(payload.message)
+        return
+      }
       await cacheStatus(key, payload)
       setFlight(payload.flight)
       setFetchedAt(Date.now())
@@ -164,6 +171,7 @@ export default function FlightStatus({ flightNumber, date }) {
       {error && online && (
         <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>
       )}
+      {info && <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{info}</p>}
 
       {flight ? (
         <div className="mt-3">
@@ -198,7 +206,8 @@ export default function FlightStatus({ flightNumber, date }) {
           )}
         </div>
       ) : (
-        !error && (
+        !error &&
+        !info && (
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
             Tap “Check Status” for live departure and arrival times.
           </p>
