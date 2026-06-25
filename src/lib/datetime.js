@@ -74,6 +74,18 @@ export function formatTime(v) {
   return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
 }
 
+// Compact relative time for the "last synced" indicator.
+export function timeAgo(ts) {
+  if (!ts) return ''
+  const s = Math.floor((Date.now() - ts) / 1000)
+  if (s < 45) return 'just now'
+  const m = Math.floor(s / 60)
+  if (m < 60) return `${m}m ago`
+  const h = Math.floor(m / 60)
+  if (h < 24) return `${h}h ago`
+  return `${Math.floor(h / 24)}d ago`
+}
+
 export function formatMoney(amount, currency) {
   if (amount == null || amount === '') return ''
   try {

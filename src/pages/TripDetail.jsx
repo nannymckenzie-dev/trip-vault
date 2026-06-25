@@ -5,6 +5,7 @@ import { CARD_SECTIONS, CARD_TYPES } from '../lib/cardTypes'
 import { formatDateRange, getTripStatus } from '../lib/trips'
 import SectionPanel from '../components/SectionPanel'
 import ShareModal from '../components/ShareModal'
+import SyncStatus from '../components/SyncStatus'
 import Spinner from '../components/Spinner'
 
 // File sections now live on their own pages (Phase 3).
@@ -26,6 +27,10 @@ export default function TripDetail() {
   const [error, setError] = useState(null)
   const [deleting, setDeleting] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
+  const [syncedAt, setSyncedAt] = useState(() => {
+    const v = localStorage.getItem(`tripvault.synced.${id}`)
+    return v ? Number(v) : null
+  })
 
   // Trip-level notes (PRD overview section 9).
   const [notes, setNotes] = useState('')
@@ -58,6 +63,13 @@ export default function TripDetail() {
     })
     setSections(next)
     setLoading(false)
+
+    // Stamp "last synced" only when we actually reached the network.
+    if (navigator.onLine) {
+      const now = Date.now()
+      localStorage.setItem(`tripvault.synced.${id}`, String(now))
+      setSyncedAt(now)
+    }
   }, [id])
 
   useEffect(() => {
@@ -135,6 +147,9 @@ export default function TripDetail() {
             </h1>
             <p className="truncate text-xs text-slate-500 dark:text-slate-400">
               {formatDateRange(trip.start_date, trip.end_date)} · {getTripStatus(trip)}
+            </p>
+            <p className="truncate text-[11px]">
+              <SyncStatus syncedAt={syncedAt} />
             </p>
           </div>
           <button

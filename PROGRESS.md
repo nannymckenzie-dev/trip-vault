@@ -4,23 +4,35 @@ Working handoff doc. Spec: `nanny_trip_vault_PRD.md`. Last updated: **2026-06-24
 
 ## ⏭️ NEXT ACTION
 
-**Phases 1–5 are DONE and deployed.** Phase 4 (Gmail import) and Phase 5 (AeroAPI flight
-status) both verified end-to-end against the live site. **Prod domain:
+**All 8 PRD phases are built and deployed.** Phases 1–5 verified end-to-end; 6, 7, 8 built +
+deployed (6 also API-verified) and awaiting a final browser pass. **Prod domain:
 `https://trip-vault-nanny.vercel.app`** (Vercel scope `m6andco`, account `nannymckenzie-dev`;
 all env vars set in prod + preview + `.env.local`).
 
-**Next: Phase 6 — read-only share links.** Per PRD §Sharing / §Phase 6:
-- Share token generation + a share-settings modal (toggle which sections are exposed:
-  docs / tickets / budget).
-- Public `/share/:token` route that renders without auth (read-only).
-- Revoke share. Remember PRD principle #5: documents stay private — only expose what the
-  toggle allows, via signed URLs, never permanent public URLs.
+**Remaining:**
+1. Owner browser pass on 6 (share modal/link/revoke), 7 (budget + currency), 8 (toggle dark
+   mode in Settings, install-to-home-screen, "last synced" line on a trip while offline).
+2. **Rotate** the secrets below before any wider use.
 
 **Standing reminders:**
 - **Rotate** these secrets — all pasted into a chat transcript: Anthropic key, Google client
   secret, AeroAPI key. (Update in Vercel via `vercel env rm` + `add`, then redeploy.)
 - Minor: stored `gmail_address` is null (cosmetic; `getTokenInfo` display lookup failed
   non-fatally — scanning works off the refresh token).
+
+## Phase 8 — built (2026-06-25)
+
+Polish pass. `src/lib/theme.js` (class-based `.dark` toggle, light/dark/system, `initTheme()`
+in main.jsx pre-render), `src/pages/Settings.jsx` (`/settings`, gear icon on the Trips header):
+theme, home currency, install-to-home-screen, offline cache size. `src/lib/install.js` captures
+`beforeinstallprompt`; `src/lib/prefs.js` stores home currency (used as the calculator's default
+"To"). `src/components/SyncStatus.jsx` + `timeAgo()` add a "Synced Xm ago / Offline" line to the
+trip header (stamped only on an online load). Empty/loading states were already present on every
+list page; offline relies on the existing SW NetworkFirst (Supabase) + IndexedDB caches (files,
+rates, flight status). Tap targets are 44px and base font 16px throughout (mobile UX).
+
+Open polish ideas (not blockers): per-trip "last synced" is `navigator.onLine`-based, not a true
+network-vs-cache signal; home currency is the only setting so far.
 
 ## Phase 7 — built (2026-06-25)
 
@@ -58,7 +70,7 @@ anchored to the flight date ±1 day with `end` kept an hour under AeroAPI's +2-d
 | 5 | AeroAPI flight status | ✅ Done — key set, deployed, live status verified with real flight data |
 | 6 | Read-only share links (`/share/:token`) | 🟡 Built + deployed, API-verified — owner UI pending a browser check |
 | 7 | Budget tracker + currency calculator | 🟡 Built + deployed — pending a browser check |
-| 8 | Offline audit, install prompts, mobile polish, dark mode, empty/loading states | 🟡 In progress — dark mode + Settings + install + home-currency done; remaining: "last synced", empty/loading audit, offline audit |
+| 8 | Offline audit, install prompts, mobile polish, dark mode, empty/loading states | 🟡 Built — dark mode + Settings + install + home-currency + "last synced"; empty/loading + offline audited (already solid). Pending browser check |
 
 ## Live environment
 
