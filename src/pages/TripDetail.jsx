@@ -6,8 +6,13 @@ import { formatDateRange, getTripStatus } from '../lib/trips'
 import SectionPanel from '../components/SectionPanel'
 import Spinner from '../components/Spinner'
 
-// Sections not yet built (Phase 3 / 7).
-const PLACEHOLDER_SECTIONS = ['Tickets', 'Documents', 'Budget']
+// File sections now live on their own pages (Phase 3).
+const LINK_SECTIONS = [
+  { name: 'Tickets', to: 'tickets' },
+  { name: 'Documents', to: 'documents' },
+]
+// Still to come (Phase 7).
+const PLACEHOLDER_SECTIONS = ['Budget']
 
 export default function TripDetail() {
   const { id } = useParams()
@@ -193,8 +198,20 @@ export default function TripDetail() {
           />
         </section>
 
-        {/* Phase 3/7 placeholders. */}
+        {/* File sections — link to their own pages. */}
         <div className="space-y-2 pt-1">
+          {LINK_SECTIONS.map((s) => (
+            <Link
+              key={s.to}
+              to={`/trips/${id}/${s.to}`}
+              className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 ring-1 ring-slate-200 transition hover:ring-sky-400 dark:bg-slate-900 dark:ring-slate-800"
+            >
+              <span className="font-medium text-slate-900 dark:text-slate-50">{s.name}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4 text-slate-400">
+                <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
+          ))}
           {PLACEHOLDER_SECTIONS.map((name) => (
             <div
               key={name}

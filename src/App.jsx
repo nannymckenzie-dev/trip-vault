@@ -7,6 +7,8 @@ import TripForm from './pages/TripForm'
 import TripDetail from './pages/TripDetail'
 import CardForm from './pages/CardForm'
 import CardDetail from './pages/CardDetail'
+import Documents from './pages/Documents'
+import Tickets from './pages/Tickets'
 
 export default function App() {
   return (
@@ -44,6 +46,24 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <TripForm />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* File sections (static segments rank above the :section card routes). */}
+          <Route
+            path="/trips/:id/documents"
+            element={
+              <ProtectedRoute>
+                <Documents />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/trips/:id/tickets"
+            element={
+              <ProtectedRoute>
+                <Tickets />
               </ProtectedRoute>
             }
           />
