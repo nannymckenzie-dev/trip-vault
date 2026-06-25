@@ -9,6 +9,7 @@ import CardForm from './pages/CardForm'
 import CardDetail from './pages/CardDetail'
 import Documents from './pages/Documents'
 import Tickets from './pages/Tickets'
+import Import from './pages/Import'
 
 export default function App() {
   return (
@@ -64,6 +65,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Tickets />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/trips/:id/import"
+            element={
+              <ProtectedRoute>
+                <Import />
               </ProtectedRoute>
             }
           />

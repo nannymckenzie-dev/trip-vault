@@ -2,15 +2,15 @@
 
 Working handoff doc. Spec: `nanny_trip_vault_PRD.md`. Last updated: **2026-06-24 (evening)**.
 
-## Status: Phases 1–3 complete, deployed, and verified
+## Status: Phases 1–3 complete + deployed; Phase 4 code complete (pending external setup)
 
 | Phase | Scope | Status |
 |-------|-------|--------|
 | 1 | Vite + React + Tailwind + PWA, Supabase auth, `/trips` grid, trip CRUD | ✅ Done |
 | 2 | 5 card types, quick tags, trip overview panels, drag-to-reorder | ✅ Done |
 | 3 | Storage buckets + RLS, document vault, ticket storage, pdf.js viewer, offline file cache | ✅ Done |
-| 4 | Gmail OAuth + Claude email import + review queue | ⬜ Next |
-| 5 | AeroAPI flight status | ⬜ |
+| 4 | Gmail OAuth + Claude email import + review queue | 🟡 Code done — needs Google/Anthropic/Vercel setup (`docs/phase4-setup.md`) |
+| 5 | AeroAPI flight status | ⬜ Next |
 | 6 | Read-only share links (`/share/:token`) | ⬜ |
 | 7 | Budget tracker (`/trips/:id/budget`) | ⬜ |
 | 8 | Offline audit, install prompts, mobile polish, dark mode, empty/loading states | ⬜ |
@@ -57,11 +57,23 @@ aren't set in Vercel — `src/lib/supabase.js` throws at load. Fix: set the vars
 - [ ] Consider not eagerly precaching the ~420 kB pdf.js chunk in the service worker (Phase 8 polish).
 - [ ] The seeded user's password appears in the build chat transcript — rotate via Supabase Auth if desired.
 
-## Next session — Phase 4 starting point
+## Phase 4 — built (2026-06-24)
 
-1. Decide serverless function layout for Vercel (`/api/*`) — first server-side code in the project.
-2. Server-side secrets to add in Vercel (no `VITE_` prefix): `SUPABASE_SERVICE_ROLE_KEY`,
-   `ANTHROPIC_API_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`.
-3. Build: Gmail OAuth (read-only `gmail.readonly`), label scan, Claude parse → review queue
-   (no silent saves — user confirms each), `imported_emails` dedupe, PDF attachment → ticket storage.
-4. Model note: PRD specifies `claude-sonnet-4-6`; latest available is `claude-opus-4-8`. Confirm choice.
+First server-side code. Vercel serverless functions under `/api`:
+- `api/_lib/` — `supabaseAdmin.js` (service-role client + JWT `getUser`), `google.js`
+  (OAuth2 client, HMAC-signed `state`, per-user Gmail client), `claudeParse.js`
+  (`claude-sonnet-4-6`, JSON-envelope prompt, defensive parse).
+- `api/gmail/` — `connect` (POST → consent URL), `callback` (stores refresh token),
+  `status`, `scan` (label list → dedupe vs `imported_emails` → Claude parse → candidates),
+  `attachment` (PDF bytes for the confirm step).
+- Client: `src/lib/api.js` (authed fetch), `src/lib/emailImport.js` (type→table map +
+  payload builder), `src/pages/Import.jsx` (review queue, reuses `Field` + `QuickTagPicker`).
+  Route `/trips/:id/import`; linked from trip detail.
+- `vercel.json` rewrite now excludes `/api/` (`/((?!api/).*)`).
+- Model chosen: **`claude-sonnet-4-6`** (per PRD). PDF-attachment import included.
+
+**To go live:** complete `docs/phase4-setup.md` (Google OAuth app, Anthropic key, Vercel
+env vars incl. new `OAUTH_STATE_SECRET`, Gmail "Trip Vault" label), then `vercel dev`
+locally or deploy. No DB migration — `gmail_connections` + `imported_emails` already exist.
+
+## Next session — Phase 5 (AeroAPI flight status)

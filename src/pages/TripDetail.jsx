@@ -10,6 +10,7 @@ import Spinner from '../components/Spinner'
 const LINK_SECTIONS = [
   { name: 'Tickets', to: 'tickets' },
   { name: 'Documents', to: 'documents' },
+  { name: 'Import from email', to: 'import' },
 ]
 // Still to come (Phase 7).
 const PLACEHOLDER_SECTIONS = ['Budget']
