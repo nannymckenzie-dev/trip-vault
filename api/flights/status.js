@@ -100,9 +100,12 @@ export default async function handler(req, res) {
     return
   }
 
-  // Valid [start, end) window, clamped to AeroAPI's +2-day future bound.
+  // Valid [start, end) window around the flight date. AeroAPI rejects an end
+  // bound at (or just past) its +2-day limit — and `now + 2*DAY` lands exactly
+  // there — so keep a 1-hour buffer under it.
+  const safeFuture = now + 2 * DAY - 60 * 60 * 1000
   const start = new Date(target.getTime() - DAY).toISOString()
-  const end = new Date(Math.min(target.getTime() + 2 * DAY, now + 2 * DAY)).toISOString()
+  const end = new Date(Math.min(target.getTime() + DAY, safeFuture)).toISOString()
 
   try {
     const url =
